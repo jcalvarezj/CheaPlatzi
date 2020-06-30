@@ -1,0 +1,9 @@
+asgiref==3.2.10
+Django==3.0.7
+lxml==4.2.3
+psycopg2==2.7.5
+PyGreSQL==5.0.4
+python-docx==0.8.6
+pytz==2020.1
+sqlparse==0.3.1
+XlsxWriter==1.0.5
