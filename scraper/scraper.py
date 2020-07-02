@@ -89,9 +89,10 @@ def run(site, verbose):
     The indexes for the sites are:
 
     0: MercadoLibre\n
-    1: eBay
+    1: [To implement]
 
-    Windoes Use: `python scraper.py --site=<index> [--verbose=<0|1>]`
+    Windows Use: `python .\scraper\scraper.py --site=<index> [--verbose=<0|1>]`
+    Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose=<0|1>]`
     
     (`python3` instead of `python` in some systems)
     """

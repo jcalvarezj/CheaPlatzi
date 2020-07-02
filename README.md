@@ -31,4 +31,15 @@ Web application that retrieves the cheapest item among different e-commerce site
 
 At present only the "scraper" module has been implemented (an initial draft/approach). It consumes [MercadoLibre](https://www.mercadolibre.com/)'s API to access Colombia's list of products from the consoles and video games category and shows an example of filtered products (those that match with "Playstation" in their titles).
 
-To run, use `python .\scraper\scraper.py` on Windows and `python3 ./scraper/scraper.py` on Linux/Unix
+To run, use 
+
+On Windows: `python .\scraper\scraper.py --site=<index> [--verbose=<0|1>]`
+On Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose=<0|1>]`
+
+The indexes for the sites are:
+
+0: MercadoLibre
+1: [In Progress]
+...
+
+The optional `verbose` argument enables to see detailed information about the response bodies from the performed requests to the APIs
