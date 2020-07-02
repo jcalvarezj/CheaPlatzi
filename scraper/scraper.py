@@ -2,24 +2,13 @@
 This module is in charge of performing requests to e-commerce sites' public 
 APIs, in order to retrieve product data
 """
-
+import sys
+import click
 import grequests
+from constants import MercadoLibreConfig as MLC, HEADERS
 
 
-TEST_COUNTRY_ID = 'MCO'
-HEADERS = {
-    'Content-Type': 'application/json'
-}
-BASE_URL = 'https://api.mercadolibre.com'
-SITES_URL = f'{BASE_URL}/sites'
-BASE_SITE_URL = f'{BASE_URL}/sites/$SITE_ID'
-CATEGORIES_URL = f'{BASE_SITE_URL}/categories'
-PRODUCTS_URL = f'{BASE_SITE_URL}/search?category=$CATEGORY_ID'
-COUNTRY_NAME = 'Colombia'
-CATEGORY_NAME = 'Consolas y Videojuegos'
-
-
-def handle_exception(request, exception):
+def _handle_exception(request, exception):
     """
     Exception handler callback function
     """
@@ -27,7 +16,8 @@ def handle_exception(request, exception):
     print(exception)
 
 
-def send_request(endpoints, country_id = "", category_id = ""):
+def send_request(endpoints, country_id = "", category_id = "",
+                 verbose = False):
     """
     Attempts to send a request with for the specified list of endpoints.
     If the endpoints have $SITE_ID and $CATEGORY_ID URL parameters, the 
@@ -45,22 +35,24 @@ def send_request(endpoints, country_id = "", category_id = ""):
                                               headers = HEADERS))
 
     responses = grequests.map(pending_requests,
-                              exception_handler = handle_exception)
+                              exception_handler = _handle_exception)
 
     for index, response in enumerate(responses):
         r_url = response.request.url
 
-        if (response.status_code == 200):
+        if response.status_code == 200:
             print(f'\n{"*" * 70}')
-            print(f'SUCCESS! Response #{index} for {r_url}:\n')
-            print(response.json())
+            print(f'SUCCESS! Obtained response #{index} for {r_url}\n')
+            if verbose:
+                print(response.json())
             print(f'{"*" * 70}\n')
         else:
             print(f'\n{"*" * 70}')
             print(f'Problem with the request to {r_url}. ')
             print(f'Response #{index}:')
             print(response.status_code)
-            print(response.json())
+            if verbose:
+                print(response.json())
             print(f'{"*" * 70}\n')
 
     return responses
@@ -84,39 +76,76 @@ def _find_contains_among_records(records_collection, match, prop):
             if match.upper() in record[prop].upper()]
 
 
+@click.command()
+@click.option('--site', help = 'The index of the site to scrap', type = int,
+              required = True)
+@click.option('--verbose', help = 'Indicate whether or not to show additional '
+              'information in the output (show API responses)', default = 0)
+def run(site, verbose):
+    """
+    This module retrieves the list of products from the Consoles and Video
+    Games category within the selected e-commerce site.
+
+    The indexes for the sites are:
+
+    0: MercadoLibre\n
+    1: eBay
+
+    Windoes Use: `python scraper.py --site=<index> [--verbose=<0|1>]`
+    
+    (`python3` instead of `python` in some systems)
+    """
+    if site == 0:
+        print(f'Trying to get {MLC.COUNTRY_NAME.value}\'s id')
+
+        country_responses = send_request([MLC.SITES_URL.value])
+        countries = country_responses[0].json()
+
+        found_country = _find_exact_among_records(countries,
+                                                  MLC.COUNTRY_NAME.value,
+                                                  'name')
+        country_id = found_country['id']
+
+        print(f'{MLC.COUNTRY_NAME.value}\'s id is {country_id}')
+        print(f'Trying to get all the categories for country id {country_id}')
+
+        category_reponses = send_request([MLC.CATEGORIES_URL.value],
+                                         country_id = country_id)
+        categories = category_reponses[0].json()
+
+        print(f'Trying to get the id of the "{MLC.CATEGORY_NAME.value}"'
+              'category')
+
+        found_category = _find_exact_among_records(categories,
+                                                   MLC.CATEGORY_NAME.value,
+                                                   'name')
+        category_id = found_category['id']
+
+        print(f'"{MLC.CATEGORY_NAME.value}" in {MLC.COUNTRY_NAME.value}\'s '
+              f'site has id: {category_id}')
+        print(f'Retrieving all products for {MLC.CATEGORY_NAME.value}')
+
+        product_responses = send_request([MLC.PRODUCTS_URL.value], country_id,
+                                         category_id)
+
+        products = product_responses[0].json()
+
+        print(f'{products["paging"]["total"]} items found in this category')
+        print(f'The current page displays {products["paging"]["limit"]} items')
+
+        print('Trying to find "Playstation" items\n')
+
+        playstations = _find_contains_among_records(products['results'],
+                                                    'Playstation', 'title')
+
+        print(playstations)
+
+    elif site == 1:
+        print('[Placeholder for other e-commerce]')
+        print(bool(verbose))
+    else:
+        print('Invalid option for site')
+
+
 if __name__ == "__main__":
-    print(f'Trying to get {COUNTRY_NAME}\'s id')
-
-    country_responses = send_request([SITES_URL])
-    countries = country_responses[0].json()
-
-    found_country = _find_exact_among_records(countries, COUNTRY_NAME, 'name')
-    country_id = found_country['id']
-
-    print(f'{COUNTRY_NAME}\'s id is {country_id}')
-    print(f'Trying to get all the categories for country id {country_id}')
-
-    category_reponses = send_request([CATEGORIES_URL], country_id = country_id)
-    categories = category_reponses[0].json()
-
-    print(f'Trying to get the id of the "{CATEGORY_NAME}" category')
-
-    found_category = _find_exact_among_records(categories, CATEGORY_NAME, 'name')
-    category_id = found_category['id']
-
-    print(f'"{CATEGORY_NAME}" in {COUNTRY_NAME}\'s site has id: {category_id}')
-    print(f'Retrieving all products for {CATEGORY_NAME}')
-
-    product_responses = send_request([PRODUCTS_URL], country_id, category_id)
-
-    products = product_responses[0].json()
-
-    print(f'{products["paging"]["total"]} items found in this category')
-    print(f'The current page displays {products["paging"]["limit"]} items')
-
-    print('Trying to find "Playstation" items\n')
-
-    playstations = _find_contains_among_records(products['results'],
-                                                'Playstation', 'title')
-
-    print(playstations)
+    run()
