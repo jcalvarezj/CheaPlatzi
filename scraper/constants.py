@@ -18,33 +18,34 @@ class MercadoLibreConfig(Enum):
     COUNTRY_NAME = 'Colombia'
     CATEGORY_NAME = 'Consolas y Videojuegos'
     EXPORT_FILE_PATH = 'export/ml_items.json'
-    TEST_PRODUCTS = [
-        {
-            'name': Xbox One S#,
-            # 'description': "product_name",
-            # 'price': "asdf",
-            # 'image': "aaaaa",
-            # 'url': "Encontradas 20 cajas"
-        },
-        {
-            'name': PlayStation 4#,
-            # 'description': "product_name",
-            # 'price': "asdf",
-            # 'image': "aaaaa",
-            # 'url': "Encontradas 20 cajas"
-        },
-        {
-            'name': Nintendo Switch#,
-            # 'description': "product_name",
-            # 'price': "asdf",
-            # 'image': "aaaaa",
-            # 'url': "Encontradas 20 cajas"
-        }
-    ]
 
 
 class OLXConfig(Enum):
     BASE_URL = 'https://www.olx.com.co/'
+    PRODUCTS_URL = 'https://www.olx.com.co/video-juegos-consolas_c1022'
     SPIDER_NAME = 'olxspider'
     BASE_DOMAIN = 'olx.com.co'
     EXPORT_FILE_PATH = 'export/olx_items.json'
+    TEST_PRODUCTS = [
+        {
+            'name': Xbox One S#,
+            # 'description': "here description",
+            # 'price': "$$$",
+            # 'image': "url to image",
+            # 'url': "url to offer post"
+        },
+        {
+            'name': PlayStation 4#,
+            # 'description': "here description",
+            # 'price': "$$$",
+            # 'image': "url to image",
+            # 'url': "url to offer post"
+        },
+        {
+            'name': Nintendo Switch#,
+            # 'description': "here description",
+            # 'price': "$$$",
+            # 'image': "url to image",
+            # 'url': "url to offer post"
+        }
+    ]

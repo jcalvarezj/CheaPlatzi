@@ -18,7 +18,7 @@ class OLXSpider(scrapy.Spider):
         },
         'DEPTH_LIMIT': 1
     }
-    start_urls = ['https://www.olx.com.co/video-juegos-consolas_c1022']
+    start_urls = [OLX.PRODUCTS_URL.value]
 
 
     def parse(self, response):
@@ -32,14 +32,12 @@ class OLXSpider(scrapy.Spider):
 
         for box in product_boxes:
 
-            #product_name = box.
-
             yield {
-                'name': 'aaaaaa',
-                'description': 'product_name',
-                'price': 'asdf',
-                'image': 'aaaaa',
-                'url': f'Encontradas {len(product_boxes)} cajas'
+                'name': box.xpath('//span[@data-aut-id="itemTitle"]')#,
+                # 'description': 'here description',
+                # 'price': '"$$$',
+                # 'image': 'url to image',
+                # 'url': f'url to offer post'
             }
 
 
