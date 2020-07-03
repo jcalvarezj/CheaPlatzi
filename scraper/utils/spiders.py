@@ -26,7 +26,7 @@ class OLXSpider(scrapy.Spider):
         Retrieves product information from the product detail page, and exports
         it to the output json
         """
-        self.log('0000000000000000000000000000000000000000000000')
+        self.log(f'>>>>> ATTEMPTING TO SCRAP {response.url}<<<<<')
 
         name_xp = f'//section[@class="{OLX.RIGHT_SECT_CLASS.value}"]/h1/text()'
         name = response.xpath(name_xp).get()
