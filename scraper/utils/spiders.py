@@ -59,13 +59,4 @@ class OLXSpider(scrapy.Spider):
         product_urls = response.xpath('//li[@data-aut-id="itemBox"]//a/@href').getall()
 
         for url in product_urls:
-            # yield {
-            #     'name': url#,
-            #     # 'description': 'here description',
-            #     # 'price': '"$$$',
-            #     # 'image': 'url to image',
-            #     # 'url': f'url to offer post'
-            # }
-            full_url = response.urljoin(url)
-            # self.log(f'\n!!!!!!!!! TRYING TO FOLLOW {new_url}\n')
             yield response.follow(url, callback = self.parse_product)
