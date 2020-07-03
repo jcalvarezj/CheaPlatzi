@@ -1,9 +1,11 @@
 """
 This module holds the scraper's configuration constants
 """
+import os
 from enum import Enum
 
 
+TEST_PATH = f'{os.getcwd()}/scraper/test'
 HEADERS = {
     'Content-Type': 'application/json'
 }
@@ -26,3 +28,26 @@ class OLXConfig(Enum):
     SPIDER_NAME = 'olxspider'
     BASE_DOMAIN = 'olx.com.co'
     EXPORT_FILE_PATH = 'export/olx_items.json'
+    TEST_PRODUCTS = [
+        {
+            'name': 'Xbox One S'#,
+            # 'description': "here description",
+            # 'price': "$$$",
+            # 'image': "url to image",
+            # 'url': "url to offer post"
+        },
+        {
+            'name': 'PlayStation 4'#,
+            # 'description': "here description",
+            # 'price': "$$$",
+            # 'image': "url to image",
+            # 'url': "url to offer post"
+        },
+        {
+            'name': 'Nintendo Switch'#,
+            # 'description': "here description",
+            # 'price': "$$$",
+            # 'image': "url to image",
+            # 'url': "url to offer post"
+        }
+    ]

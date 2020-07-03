@@ -18,7 +18,6 @@ class OLXSpider(scrapy.Spider):
         },
         'DEPTH_LIMIT': 1
     }
-    start_urls = [OLX.PRODUCTS_URL.value]
 
 
     def parse(self, response):
@@ -28,12 +27,11 @@ class OLXSpider(scrapy.Spider):
         Product containers class: itembox
         href of li in all containers is a relative path
         """
-        product_boxes = response.xpath('//li[@data-aut-id="itemBox"]').getall()
+        product_names = response.xpath('//li[@data-aut-id="itemBox"]//span[@data-aut-id="itemTitle"]/text()').getall()
 
-        for box in product_boxes:
-
+        for name in product_names:
             yield {
-                'name': box.xpath('//span[@data-aut-id="itemTitle"]')#,
+                'name': name#,
                 # 'description': 'here description',
                 # 'price': '"$$$',
                 # 'image': 'url to image',

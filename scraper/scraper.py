@@ -7,6 +7,7 @@ import click
 import grequests
 from utils.spiders import OLXSpider
 from scrapy.crawler import CrawlerProcess
+from utils.constants import OLXConfig as OLX
 from utils.constants import MercadoLibreConfig as MLC, HEADERS
 
 
@@ -145,7 +146,7 @@ def run(site, verbose):
     elif site == 1:
         print('[Placeholder for other e-commerce]')
         process = CrawlerProcess()
-        process.crawl(OLXSpider)
+        process.crawl(OLXSpider, start_urls = [OLX.PRODUCTS_URL.value])
         process.start()
     else:
         print('Invalid option for site')
