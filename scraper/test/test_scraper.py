@@ -3,14 +3,17 @@ This module performs unit tests on the scraper module
 """
 import pytest
 import os.path
-from ..spiders import OLXSpider
-from ..constants import OLXConfig as OLX
+from ..utils.spiders import OLXSpider
+from ..utils.constants import OLXConfig as OLX
 from scrapy.crawler import CrawlerProcess
 
 
 def olx_setup():
+    """
+    Initializes the required conditions for testing on OLX
+    """
     process = CrawlerProcess()
-    process.crawl(OLXSpider)
+    process.crawl(OLXSpider, settings = {'start_urls': [OLX.PRODUCTS_URL.value]})
     process.start()
 
 

@@ -39,11 +39,3 @@ class OLXSpider(scrapy.Spider):
                 # 'image': 'url to image',
                 # 'url': f'url to offer post'
             }
-
-
-if __name__ == "__main__":
-    from scrapy.crawler import CrawlerProcess
-
-    process = CrawlerProcess()
-    process.crawl(OLXSpider)
-    process.start()

@@ -5,7 +5,9 @@ APIs, in order to retrieve product data
 import sys
 import click
 import grequests
-from constants import MercadoLibreConfig as MLC, HEADERS
+from utils.spiders import OLXSpider
+from scrapy.crawler import CrawlerProcess
+from utils.constants import MercadoLibreConfig as MLC, HEADERS
 
 
 def _handle_exception(request, exception):
@@ -92,9 +94,8 @@ def run(site, verbose):
     1: [To implement]
 
     Windows Use: `python .\scraper\scraper.py --site=<index> [--verbose=<0|1>]`
-    Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose=<0|1>]`
-    
-    (`python3` instead of `python` in some systems)
+
+    Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose=<0|1>]`    
     """
     if site == 0:
         print(f'Trying to get {MLC.COUNTRY_NAME.value}\'s id')
@@ -143,7 +144,9 @@ def run(site, verbose):
 
     elif site == 1:
         print('[Placeholder for other e-commerce]')
-        print(bool(verbose))
+        process = CrawlerProcess()
+        process.crawl(OLXSpider)
+        process.start()
     else:
         print('Invalid option for site')
 
