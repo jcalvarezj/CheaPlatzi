@@ -6,16 +6,16 @@ import scrapy
 
 class OLXSpider(scrapy.Spider):
     name = OLX.SPIDER_NAME.value
-    allowed_domains = [OLX.BASE_DOMAIN.value]    
     custom_settings = {
         'FEEDS': {
             OLX.EXPORT_FILE_PATH.value: {
                 'format': 'json',
-                'encoding': 'utf8',
+                'encoding': 'utf-8',
                 'fields': ['name', 'description', 'price', 'image', 'url'],
-                'indent': 4            
+                'indent': 4
             }
         },
+        "FEED_EXPORT_ENCODING": "utf-8",
         'DEPTH_LIMIT': 1,
         'AUTOTHROTTLE_ENABLED': True
     }
@@ -31,12 +31,21 @@ class OLXSpider(scrapy.Spider):
         name_xp = f'//section[@class="{OLX.RIGHT_SECT_CLASS.value}"]/h1/text()'
         name = response.xpath(name_xp).get()
 
+        desc_xp = f'//section[@class="{OLX.LEFT_SECT_CLASS.value}"]//p/text()'
+        description = response.xpath(desc_xp).get()
+
+        price_xp = f'//section[@class="{OLX.RIGHT_SECT_CLASS.value}"]//span/text()'
+        price = response.xpath(price_xp).get()
+
+        image_xp = f'//div[contains(@class, "{OLX.IMG_DIV_CLASS.value}")]//img/@src'
+        image = response.urljoin(response.xpath(image_xp).get())
+
         yield {
-            'name': name#,
-            # 'description': 'here description',
-            # 'price': '"$$$',
-            # 'image': 'url to image',
-            # 'url': f'url to offer post'
+            'name': name,
+            'description': description,
+            'price': price,
+            'image': image,
+            'url': response.url
         }
 
 
@@ -57,5 +66,6 @@ class OLXSpider(scrapy.Spider):
             #     # 'image': 'url to image',
             #     # 'url': f'url to offer post'
             # }
-            self.log(f'!!!!!!!!! TRYING TO FOLLOW {url} -- {response.url}')
+            full_url = response.urljoin(url)
+            # self.log(f'\n!!!!!!!!! TRYING TO FOLLOW {new_url}\n')
             yield response.follow(url, callback = self.parse_product)

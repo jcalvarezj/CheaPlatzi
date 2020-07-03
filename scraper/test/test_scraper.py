@@ -43,7 +43,7 @@ def test_olx_scrapper_happy_path_json_data_exported():
         data = json.load(json_file)
         assert data == OLX.TEST_PRODUCTS.value
 
-    #cleanup(file_path)
+    cleanup(file_path)
 
 
 ## TODO: test when there are no articles
