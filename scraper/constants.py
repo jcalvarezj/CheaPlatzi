@@ -17,11 +17,34 @@ class MercadoLibreConfig(Enum):
     PRODUCTS_URL = f'{BASE_SITE_URL}/search?category=$CATEGORY_ID'    
     COUNTRY_NAME = 'Colombia'
     CATEGORY_NAME = 'Consolas y Videojuegos'
-    EXPORT_FILE_NAME = 'ml_items.json'
+    EXPORT_FILE_PATH = 'export/ml_items.json'
+    TEST_PRODUCTS = [
+        {
+            'name': Xbox One S#,
+            # 'description': "product_name",
+            # 'price': "asdf",
+            # 'image': "aaaaa",
+            # 'url': "Encontradas 20 cajas"
+        },
+        {
+            'name': PlayStation 4#,
+            # 'description': "product_name",
+            # 'price': "asdf",
+            # 'image': "aaaaa",
+            # 'url': "Encontradas 20 cajas"
+        },
+        {
+            'name': Nintendo Switch#,
+            # 'description': "product_name",
+            # 'price': "asdf",
+            # 'image': "aaaaa",
+            # 'url': "Encontradas 20 cajas"
+        }
+    ]
 
 
 class OLXConfig(Enum):
     BASE_URL = 'https://www.olx.com.co/'
     SPIDER_NAME = 'olxspider'
     BASE_DOMAIN = 'olx.com.co'
-    EXPORT_FILE_NAME = 'olx_items.json'
+    EXPORT_FILE_PATH = 'export/olx_items.json'

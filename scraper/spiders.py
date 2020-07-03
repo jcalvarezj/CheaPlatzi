@@ -9,7 +9,7 @@ class OLXSpider(scrapy.Spider):
     allowed_domains = [OLX.BASE_DOMAIN.value]
     custom_settings = {
         'FEEDS': {
-            OLX.EXPORT_FILE_NAME.value: {
+            OLX.EXPORT_FILE_PATH.value: {
                 'format': 'json',
                 'encoding': 'utf8',
                 'fields': ['name', 'description', 'price', 'image', 'url'],

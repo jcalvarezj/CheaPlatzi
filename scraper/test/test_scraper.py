@@ -21,4 +21,6 @@ def test_olx_scrapper_happy_path_json_data_exported():
     """
     olx_setup()
 
-    assert os.path.exists(f'../{OLX.EXPORT_FILE_NAME.value}'), 'expected the file to exist'
+    file_path = f'{OLX.EXPORT_FILE_PATH.value}'
+
+    assert os.path.exists(file_path), f'expected the file {file_path} to exist'
