@@ -34,7 +34,7 @@ To run unit tests on the scraper module, simply run `pytest` at the project's ro
 
 ## Execution
 
-At present only the "scraper" module has been implemented (an initial draft/approach). It consumes [MercadoLibre](https://www.mercadolibre.com/)'s API to access Colombia's list of products from the consoles and video games category and shows an example of filtered products (those that match with "Playstation" in their titles).
+At present only the "scraper" module has been implemented (an initial draft/approach). It consumes [MercadoLibre](https://www.mercadolibre.com/)'s API to access Colombia's list of products from the consoles and video games category and shows an example of filtered products (those that match with "Playstation" in their titles); and it uses **scrapy** to formally scrap products of the same category from [OLX Colombia](https://www.olx.com.co/).
 
 To run, use 
 
