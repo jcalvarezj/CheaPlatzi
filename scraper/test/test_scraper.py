@@ -5,7 +5,7 @@ import os
 import json
 import pytest
 from ..utils.spiders import OLXSpider
-from ..utils.constants import OLXConfig as OLX, TEST_PATH
+from ..utils.constants import OLXConfig as OLX
 from scrapy.crawler import CrawlerProcess
 
 
@@ -21,7 +21,7 @@ def olx_setup():
     """
     Initializes the required conditions for testing on OLX
     """
-    fileURI = f'file:{TEST_PATH}/olx_mock.html'
+    fileURI = f'file:{OLX.TEST_PATH.value}/olx_mock.html'
 
     process = CrawlerProcess()
     process.crawl(OLXSpider, start_urls = [fileURI])

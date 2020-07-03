@@ -5,7 +5,6 @@ import os
 from enum import Enum
 
 
-TEST_PATH = f'{os.getcwd()}/scraper/test'
 HEADERS = {
     'Content-Type': 'application/json'
 }
@@ -28,24 +27,27 @@ class OLXConfig(Enum):
     SPIDER_NAME = 'olxspider'
     BASE_DOMAIN = 'olx.com.co'
     EXPORT_FILE_PATH = 'export/olx_items.json'
+    RIGHT_SECT_CLASS = '_2wMiF'
+    LEFT_SECT_CLASS = 'CBG3s'
+    TEST_PATH = f'{os.getcwd()}/scraper/test/olx_mocks'
     TEST_PRODUCTS = [
         {
-            'name': 'Xbox One S'#,
-            # 'description': "here description",
+            'name': 'Xbox One S',
+            'description': "here description"#,
             # 'price': "$$$",
             # 'image': "url to image",
             # 'url': "url to offer post"
         },
         {
-            'name': 'PlayStation 4'#,
-            # 'description': "here description",
+            'name': 'PlayStation 4',
+            'description': "here description"#,
             # 'price': "$$$",
             # 'image': "url to image",
             # 'url': "url to offer post"
         },
         {
-            'name': 'Nintendo Switch'#,
-            # 'description': "here description",
+            'name': 'Nintendo Switch',
+            'description': "here description"#,
             # 'price': "$$$",
             # 'image': "url to image",
             # 'url': "url to offer post"
