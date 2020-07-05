@@ -19,9 +19,9 @@ def cleanup(created_file_path = None):
 
 def olx_setup():
     """
-    Initializes the required conditions for testing on OLX
+    Initializes the required conditions for testing on OLX's site
     """
-    fileURI = f'file:{OLX.TEST_PATH.value}/olx_mock.html'
+    fileURI = f'file:{OLX.TEST_PATH.value}/{OLX.TEST_FILE.value}'
 
     process = CrawlerProcess()
     process.crawl(OLXSpider, start_urls = [fileURI])
@@ -41,9 +41,7 @@ def test_olx_scrapper_happy_path_json_data_exported():
 
     with open(file_path) as json_file:
         data = json.load(json_file)
-        assert data == OLX.TEST_PRODUCTS.value
+        assert data == OLX.TEST_PRODUCTS.value, \
+                'the exported json file does not match the expected result'
 
     cleanup(file_path)
-
-
-## TODO: test when there are no articles

@@ -1,10 +1,13 @@
 """
 This module contains all the scrapy spiders for the scraper module
 """
-from .constants import OLXConfig as OLX
 import scrapy
+from .constants import OLXConfig as OLX
 
 class OLXSpider(scrapy.Spider):
+    """
+    This spider scraps products from the OLX e-commerce site
+    """
     name = OLX.SPIDER_NAME.value
     custom_settings = {
         'FEEDS': {
@@ -34,10 +37,11 @@ class OLXSpider(scrapy.Spider):
         desc_xp = f'//section[@class="{OLX.LEFT_SECT_CLASS.value}"]//p/text()'
         description = response.xpath(desc_xp).get()
 
-        price_xp = f'//section[@class="{OLX.RIGHT_SECT_CLASS.value}"]//span/text()'
+        price_xp = (f'//section[@class="{OLX.RIGHT_SECT_CLASS.value}"]//span/'
+                    'text()')
         price = response.xpath(price_xp).get()
-
-        image_xp = f'//div[contains(@class, "{OLX.IMG_DIV_CLASS.value}")]//img/@src'
+        image_xp = (f'//div[contains(@class, "{OLX.IMG_DIV_CLASS.value}")]//'
+                    'img/@src')
         image = response.urljoin(response.xpath(image_xp).get())
 
         yield {
@@ -51,12 +55,11 @@ class OLXSpider(scrapy.Spider):
 
     def parse(self, response):
         """
-        Retrieves information for all products: name, description, price, image, url
-
-        Product containers class: itembox
-        href of li in all containers is a relative path
+        Retrieves information for all products in terms of the fields: name,
+        description, price, image, and url
         """
-        product_urls = response.xpath('//li[@data-aut-id="itemBox"]//a/@href').getall()
+        product_urls = response.xpath('//li[@data-aut-id="itemBox"]//a/@href')\
+                           .getall()
 
         for url in product_urls:
             yield response.follow(url, callback = self.parse_product)

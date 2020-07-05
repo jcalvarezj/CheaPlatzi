@@ -1,5 +1,6 @@
 # CheaPlatzi
-Web application that retrieves the cheapest item among different e-commerce sites
+Web application that helps the user compare prices of items among different e-commerce sites, and thus find the cheapest offer.
+
 
 ## Requirements
 
