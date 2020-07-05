@@ -42,24 +42,24 @@ def cgamer_setup():
     process.start()
 
 
-# def test_olx_scrapper_happy_path_json_data_exported():
-#     """
-#     This test case checks if the scraper generates the right json file after
-#     scraping a mock with OLX's site structure
-#     """
-#     file_path = f'{OLX.EXPORT_FILE_PATH.value}'
-#     cleanup(file_path)
-#     olx_setup()
+def test_olx_scrapper_happy_path_json_data_exported():
+    """
+    This test case checks if the scraper generates the right json file after
+    scraping a mock with OLX's site structure
+    """
+    file_path = f'{OLX.EXPORT_FILE_PATH.value}'
+    cleanup(file_path)
+    olx_setup()
 
-#     assert os.path.exists(file_path), f'expected the file {file_path} to exist'
+    assert os.path.exists(file_path), f'expected the file {file_path} to exist'
 
-#     with open(file_path) as json_file:
-#         data = json.load(json_file)
+    with open(file_path) as json_file:
+        data = json.load(json_file)
         
-#         assert data == OLX.TEST_PRODUCTS.value, \
-#                 'the exported json file does not match the expected result'
+        assert data == OLX.TEST_PRODUCTS.value, \
+                'the exported json file does not match the expected result'
 
-#     cleanup(file_path)
+    cleanup(file_path)
 
 
 def test_cgamer_scrapper_happy_path_json_data_exported():
