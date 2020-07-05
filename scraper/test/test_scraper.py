@@ -36,7 +36,7 @@ def cgamer_setup():
     """
     fileURIs = [f'file:{CGamer.TEST_PATH.value}/{file_name}' for file_name 
                 in CGamer.TEST_FILES.value]
-    print(f'SCRAPEANDO A : {fileURIs}')
+    
     process = CrawlerProcess()
     process.crawl(CGamerSpider, start_urls = fileURIs)
     process.start()
