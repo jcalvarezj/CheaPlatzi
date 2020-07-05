@@ -1,5 +1,5 @@
 # CheaPlatzi
-Web application that retrieves the cheapest item among different e-commerce sites
+Web application that helps the user compare prices of items among different e-commerce sites, and thus find the cheapest offer
 
 ## Requirements
 
@@ -34,7 +34,7 @@ To run unit tests on the scraper module, simply run `pytest` at the project's ro
 
 ## Execution
 
-At present only the "scraper" module has been implemented (an initial draft/approach). It consumes [MercadoLibre](https://www.mercadolibre.com/)'s API to access Colombia's list of products from the consoles and video games category and shows an example of filtered products (those that match with "Playstation" in their titles); and it uses **scrapy** to formally scrap products of the same category from [OLX Colombia](https://www.olx.com.co/).
+At present only the "scraper" module has been implemented (an initial draft/approach). It consumes [MercadoLibre](https://www.mercadolibre.com/)'s API to access Colombia's list of products from the consoles and video games category and shows an example of filtered products (those that match with "Playstation" in their titles); and it uses **scrapy** to formally scrap products of the same category from [OLX Colombia](https://www.olx.com.co/) and [Éxito](https://www.exito.com/).
 
 To run, use 
 
@@ -47,6 +47,8 @@ The indexes for the sites are:
 0: MercadoLibre
 
 1: OLX
+
+2: Éxito
 
 ...
 

@@ -1,7 +1,6 @@
 """
 This module contains all the scrapy spiders for the scraper module
 """
-import re
 import scrapy
 from .constants import OLXConfig as OLX, ExitoConfig as Exito
 
@@ -99,29 +98,24 @@ class ExitoSpider(scrapy.Spider):
         name_xp = (f'//span[contains(@class, "{Exito.NAME_CLASS.value}")]/'
                    'text()')
         raw_name = response.xpath(name_xp).get()
-
-        #pattern = re.compile(r'^(?P<name>\"([^\"].)+\")')
-
-        #name = pattern.match(raw_name).group('name').replace('"', '')
-
         name = raw_name.partition('\r')[0].replace('"', '')
 
         # desc_xp = (f'//section[@class="{Exito.LEFT_SECT_CLASS.value}"]//p/'
         #            'text()')
         # description = response.xpath(desc_xp).get()
 
-        # price_xp = (f'//section[@class="{Exito.RIGHT_SECT_CLASS.value}"]//span/'
-        #             'text()')
-        # price = response.xpath(price_xp).get()
+        price_xp = (f'//div[contains(@class, "{Exito.PRICE_CLASS.value}")]/'
+                     'span/text()')
+        price = response.xpath(price_xp).get()
 
-        # image_xp = (f'//div[contains(@class, "{Exito.IMG_DIV_CLASS.value}")]//img/@src')
-        # image = response.urljoin(response.xpath(image_xp).get())
+        image_xp = (f'//img[contains(@class, "{Exito.IMAGE_CLASS.value}")]/@src')
+        image = response.urljoin(response.xpath(image_xp).get())
 
         yield {
-            'name': name#,
+            'name': name,
             # 'description': description,
-            # 'price': price,
-            # 'image': image,
+            'price': price,
+            'image': image#,
             # 'url': response.url
         }
 

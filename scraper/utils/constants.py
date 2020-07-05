@@ -12,24 +12,24 @@ def _get_test_products(path):
     """
     return [
         {
-            'name': 'Nintendo Switch'#,
+            'name': 'Nintendo Switch',
             # 'description': 'Ultima consola de Nintendo. Con controles extra.',
-            # 'price': '$ 1.000.000',
-            # 'image': urllib.parse.quote(f'file:///{path}/switch.jpg', safe = '/:'),
+            'price': '$ 1.000.000',
+            'image': urllib.parse.quote(f'file:///{path}/switch.jpg', safe = '/:')#,
             # 'url': urllib.parse.quote(f'file:///{path}/switch_mock.html', safe = '/:')
         },
         {
-            'name': 'PlayStation 4'#,
+            'name': 'PlayStation 4',
             # 'description': 'Completamente nuevo. Color blanco. 33 juegos.',
-            # 'price': '$ 1.350.000',
-            # 'image': urllib.parse.quote(f'file:///{path}/play.jpg', safe = '/:'),
+            'price': '$ 1.350.000',
+            'image': urllib.parse.quote(f'file:///{path}/play.jpg', safe = '/:')#,
             # 'url': urllib.parse.quote(f'file:///{path}/playstation_mock.html', safe = '/:')
         },
         {
-            'name': 'Xbox One S'#,
+            'name': 'Xbox One S',
             # 'description': 'Consola de Microsoft con 7 juegos.',
-            # 'price': '$ 1.550.000',
-            # 'image': urllib.parse.quote(f'file:///{path}/xbox.jpg', safe = '/:'),
+            'price': '$ 1.550.000',
+            'image': urllib.parse.quote(f'file:///{path}/xbox.jpg', safe = '/:')#,
             # 'url': urllib.parse.quote(f'file:///{path}/xbox_mock.html', safe = '/:')
         }
     ]
@@ -79,7 +79,7 @@ class ExitoConfig(Enum):
     ITEM_CLASS = 'vtex-product-summary-2-x-container'
     NAME_CLASS = 'vtex-store-components-3-x-productBrand'
     PRICE_CLASS = 'product-detail-exito-vtex-components-selling-price'
-    IMAGE_CLASS = 'vtex-store-components-3-x-productImage'
+    IMAGE_CLASS = 'vtex-store-components-3-x-productImageTag'
     DESC_CLASS = 'exito-product-details-3-x-productDescriptionText'
     TEST_PATH = f'{os.getcwd()}/scraper/test/exito_mocks'
     TEST_FILE = 'exito_mock.html'
