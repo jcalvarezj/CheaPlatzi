@@ -60,7 +60,7 @@ def run(site, verbose):
 
         print(f'Going to scrap {len(products)} items')
 
-        for product in products[:8]:
+        for product in products:
             params = { MLC.PRODUCT_ID_PARAM.value: product['id'] }
 
             description_responses = apis.send_request([MLC.DESC_URL.value],
