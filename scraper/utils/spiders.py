@@ -19,7 +19,7 @@ class OLXSpider(scrapy.Spider):
                 'indent': 4
             }
         },
-        "FEED_EXPORT_ENCODING": "utf-8",
+        'FEED_EXPORT_ENCODING': 'utf-8',
         'DEPTH_LIMIT': 1,
         'AUTOTHROTTLE_ENABLED': True
     }
@@ -67,7 +67,7 @@ class OLXSpider(scrapy.Spider):
             yield response.follow(url, callback = self.parse_product)
 
 
-class CGamerSpider(scrapy.Spider):
+class ColombiaGamerSpider(scrapy.Spider):
     """
     This spider scraps products from the ColombiaGamer e-commerce site
     """
@@ -81,7 +81,7 @@ class CGamerSpider(scrapy.Spider):
                 'indent': 4
             }
         },
-        "FEED_EXPORT_ENCODING": "utf-8",
+        'FEED_EXPORT_ENCODING': 'utf-8',
         'DEPTH_LIMIT': 1,
         'AUTOTHROTTLE_ENABLED': True
     }
@@ -92,7 +92,7 @@ class CGamerSpider(scrapy.Spider):
         Retrieves product information from the product detail page, and exports
         it to the output json
         """
-        self.log(f'>>>>> ATTEMPTING TO SCRAP {response.url}<<<<<')
+        self.log(f'\n>>>>> ATTEMPTING TO SCRAP {response.url}<<<<<\n')
 
         name_xp = f'//div[@class="{CGamer.TITLE_CLASS.value}"]//h2/text()'
         name = response.xpath(name_xp).get()
@@ -122,7 +122,7 @@ class CGamerSpider(scrapy.Spider):
         description, price, image, and url
         """
         product_xp = (f'//div[contains(@class, "{CGamer.ITEM_CLASS.value}")]//'
-                      'a/@href')
+                      'h2/a/@href')
         product_urls = response.xpath(product_xp).getall()
 
         for url in product_urls:

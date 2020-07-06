@@ -6,8 +6,8 @@ import sys
 import click
 import grequests
 from scrapy.crawler import CrawlerProcess
-from utils.spiders import OLXSpider, CGamerSpider
 from utils.constants import MercadoLibreConfig as MLC, HEADERS
+from utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider
 from utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
 
 
