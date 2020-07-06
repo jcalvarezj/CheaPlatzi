@@ -4,7 +4,7 @@ This module performs unit tests on the scraper module
 import os
 import json
 import pytest
-from ..utils.spiders import OLXSpider, CGamerSpider
+from ..utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider
 from ..utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
 from scrapy.crawler import CrawlerProcess
 
