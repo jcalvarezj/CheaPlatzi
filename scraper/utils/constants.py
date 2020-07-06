@@ -59,13 +59,15 @@ class MercadoLibreConfig(Enum):
     This enum provides configuration constants for MercadoLibre scraping
     """
     BASE_URL = 'https://api.mercadolibre.com'
-    SITES_URL = f'{BASE_URL}/sites'
-    BASE_SITE_URL = f'{BASE_URL}/sites/$SITE_ID'
-    CATEGORIES_URL = f'{BASE_SITE_URL}/categories'
-    PRODUCTS_URL = f'{BASE_SITE_URL}/search?category=$CATEGORY_ID'    
-    COUNTRY_NAME = 'Colombia'
-    CATEGORY_NAME = 'Consolas y Videojuegos'
+    COUNTRY_ID = 'MCO'
+    CATEGORY_ID = 'MCO1144'
+    PRODUCT_ID_PARAM = '$PRODUCT_ID'
+    BASE_SITE_URL = f'{BASE_URL}/sites/{COUNTRY_ID}'
+    PRODUCTS_URL = f'{BASE_SITE_URL}/search?category={CATEGORY_ID}'
+    DETAIL_URL = f'{BASE_URL}/items/{PRODUCT_ID_PARAM}'
+    DESC_URL = f'{DETAIL_URL}/description'
     EXPORT_FILE_PATH = 'export/ml_items.json'
+    DELAY_IN_SECS = 1
 
 
 class OLXConfig(Enum):

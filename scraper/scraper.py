@@ -3,6 +3,8 @@ This module is in charge of performing requests to e-commerce sites' public
 APIs, in order to retrieve product data
 """
 import sys
+import time
+import json
 import click
 import utils.apis as apis
 from scrapy.crawler import CrawlerProcess
@@ -50,52 +52,61 @@ def run(site, verbose):
     Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose=<0|1>]`
     """
     if site == 0:
-        print(f'Trying to get {MLC.COUNTRY_NAME.value}\'s id')
-
-        country_responses = apis.send_request([MLC.SITES_URL.value])
-        countries = country_responses[0].json()
-
-        found_country = _find_exact_among_records(countries,
-                                                  MLC.COUNTRY_NAME.value,
-                                                  'name')
-        country_id = found_country['id']
-
-        print(f'{MLC.COUNTRY_NAME.value}\'s id is {country_id}')
-        print(f'Trying to get all the categories for country id {country_id}')
-
-        category_reponses = apis.send_request([MLC.CATEGORIES_URL.value],
-                                         country_id = country_id)
-        categories = category_reponses[0].json()
-
-        print(f'Trying to get the id of the "{MLC.CATEGORY_NAME.value}"'
-              'category')
-
-        found_category = _find_exact_among_records(categories,
-                                                   MLC.CATEGORY_NAME.value,
-                                                   'name')
-        category_id = found_category['id']
-
-        print(f'"{MLC.CATEGORY_NAME.value}" in {MLC.COUNTRY_NAME.value}\'s '
-              f'site has id: {category_id}')
-        print(f'Retrieving all products for {MLC.CATEGORY_NAME.value}')
-
         product_responses = apis.send_request([MLC.PRODUCTS_URL.value],
-                                              country_id, category_id)
-        products = product_responses[0].json()
+                                              verbose = verbose)
+        products = product_responses[0].json()['results']
 
-        print(f'{products["paging"]["total"]} items found in this category')
-        print(f'The current page displays {products["paging"]["limit"]} items')
+        records = []
 
-        print('Trying to find "Playstation" items\n')
+        print(f'Going to scrap {len(products)} items')
 
-        playstations = _find_contains_among_records(products['results'],
-                                                    'Playstation', 'title')
-        print(playstations)
-    elif site == 1:        
+        for product in products[:8]:
+            params = { MLC.PRODUCT_ID_PARAM.value: product['id'] }
+
+            description_responses = apis.send_request([MLC.DESC_URL.value],
+                                                    params, verbose)
+
+
+            time.sleep(MLC.DELAY_IN_SECS.value)
+
+            img_responses = apis.send_request([MLC.DETAIL_URL.value], params,
+                                                verbose)
+
+            time.sleep(MLC.DELAY_IN_SECS.value)
+
+            description = ""
+            if description_responses:
+                try:
+                    description = description_responses[0].json()['plain_text']
+                except Exception:
+                    description = "{PROBLEM OBTAINING THIS ITEM'S DESCRIPTION}"
+
+            image = ""
+            if img_responses:
+                try:
+                    image = img_responses[0].json()['pictures'][0]['secure_url']
+                except Exception:
+                    image = "{PROBLEM OBTAINING THIS ITEM'S IMAGE URL}"
+
+            records.append({
+                'name': product['title'],
+                'description': description,
+                'price': product['price'],
+                'image': image,
+                'url': product['permalink']
+            })
+
+            time.sleep(MLC.DELAY_IN_SECS.value)
+
+        with open(MLC.EXPORT_FILE_PATH.value, 'w') as export_file:
+            export_file.write(json.dumps(records, indent = 4))
+
+        print(f'Finished scraping! All results are in {MLC.EXPORT_FILE_PATH}')
+    elif site == 1:
         process = CrawlerProcess()
         process.crawl(OLXSpider, start_urls = [OLX.PRODUCTS_URL.value])
         process.start()
-    elif site == 2:        
+    elif site == 2:
         process = CrawlerProcess()
         process.crawl(CGamerSpider, start_urls = CGamer.PRODUCT_URLS.value)
         process.start()
