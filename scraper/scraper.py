@@ -5,10 +5,10 @@ APIs, in order to retrieve product data
 import sys
 import click
 import grequests
-from utils.spiders import OLXSpider
 from scrapy.crawler import CrawlerProcess
-from utils.constants import OLXConfig as OLX
+from utils.spiders import OLXSpider, CGamerSpider
 from utils.constants import MercadoLibreConfig as MLC, HEADERS
+from utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
 
 
 def _handle_exception(request, exception):
@@ -130,7 +130,6 @@ def run(site, verbose):
 
         product_responses = send_request([MLC.PRODUCTS_URL.value], country_id,
                                          category_id)
-
         products = product_responses[0].json()
 
         print(f'{products["paging"]["total"]} items found in this category')
@@ -143,10 +142,13 @@ def run(site, verbose):
 
         print(playstations)
 
-    elif site == 1:
-        print('[Placeholder for other e-commerce]')
+    elif site == 1:        
         process = CrawlerProcess()
         process.crawl(OLXSpider, start_urls = [OLX.PRODUCTS_URL.value])
+        process.start()
+    elif site == 2:        
+        process = CrawlerProcess()
+        process.crawl(CGamerSpider, start_urls = CGamer.PRODUCT_URLS.value)
         process.start()
     else:
         print('Invalid option for site')
