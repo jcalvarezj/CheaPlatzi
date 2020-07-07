@@ -3,62 +3,14 @@ This module is in charge of performing requests to e-commerce sites' public
 APIs, in order to retrieve product data
 """
 import sys
+import time
+import json
 import click
-import grequests
+import utils.apis as apis
 from scrapy.crawler import CrawlerProcess
-from utils.constants import MercadoLibreConfig as MLC, HEADERS
+from utils.constants import MercadoLibreConfig as MLC
 from utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider
 from utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
-
-
-def _handle_exception(request, exception):
-    """
-    Exception handler callback function
-    """
-    print('Could not perform the request due to a problem:')
-    print(exception)
-
-
-def send_request(endpoints, country_id = "", category_id = "",
-                 verbose = False):
-    """
-    Attempts to send a request with for the specified list of endpoints.
-    If the endpoints have $SITE_ID and $CATEGORY_ID URL parameters, the 
-    country_id and category_id parameters are respectively required
-
-    This method returns a list of response objects
-    """
-    pending_requests = []
-
-    for endpoint in endpoints:
-        parsed_endpoint = endpoint.replace('$SITE_ID', country_id) \
-                              .replace('$CATEGORY_ID', category_id)
-
-        pending_requests.append(grequests.get(parsed_endpoint,
-                                              headers = HEADERS))
-
-    responses = grequests.map(pending_requests,
-                              exception_handler = _handle_exception)
-
-    for index, response in enumerate(responses):
-        r_url = response.request.url
-
-        if response.status_code == 200:
-            print(f'\n{"*" * 70}')
-            print(f'SUCCESS! Obtained response #{index} for {r_url}\n')
-            if verbose:
-                print(response.json())
-            print(f'{"*" * 70}\n')
-        else:
-            print(f'\n{"*" * 70}')
-            print(f'Problem with the request to {r_url}. ')
-            print(f'Response #{index}:')
-            print(response.status_code)
-            if verbose:
-                print(response.json())
-            print(f'{"*" * 70}\n')
-
-    return responses
 
 
 def _find_exact_among_records(records_collection, match, prop):
@@ -92,61 +44,69 @@ def run(site, verbose):
     The indexes for the sites are:
 
     0: MercadoLibre\n
-    1: [To implement]
+    1: OLX\n
+    2: ColombiaGamer
 
     Windows Use: `python .\scraper\scraper.py --site=<index> [--verbose=<0|1>]`
 
-    Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose=<0|1>]`    
+    Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose=<0|1>]`
     """
     if site == 0:
-        print(f'Trying to get {MLC.COUNTRY_NAME.value}\'s id')
+        product_responses = apis.send_request([MLC.PRODUCTS_URL.value],
+                                              verbose = verbose)
+        products = product_responses[0].json()['results']
 
-        country_responses = send_request([MLC.SITES_URL.value])
-        countries = country_responses[0].json()
+        records = []
 
-        found_country = _find_exact_among_records(countries,
-                                                  MLC.COUNTRY_NAME.value,
-                                                  'name')
-        country_id = found_country['id']
+        print(f'Going to scrap {len(products)} items')
 
-        print(f'{MLC.COUNTRY_NAME.value}\'s id is {country_id}')
-        print(f'Trying to get all the categories for country id {country_id}')
+        for product in products:
+            params = { MLC.PRODUCT_ID_PARAM.value: product['id'] }
 
-        category_reponses = send_request([MLC.CATEGORIES_URL.value],
-                                         country_id = country_id)
-        categories = category_reponses[0].json()
+            description_responses = apis.send_request([MLC.DESC_URL.value],
+                                                    params, verbose)
 
-        print(f'Trying to get the id of the "{MLC.CATEGORY_NAME.value}"'
-              'category')
 
-        found_category = _find_exact_among_records(categories,
-                                                   MLC.CATEGORY_NAME.value,
-                                                   'name')
-        category_id = found_category['id']
+            time.sleep(MLC.DELAY_IN_SECS.value)
 
-        print(f'"{MLC.CATEGORY_NAME.value}" in {MLC.COUNTRY_NAME.value}\'s '
-              f'site has id: {category_id}')
-        print(f'Retrieving all products for {MLC.CATEGORY_NAME.value}')
+            img_responses = apis.send_request([MLC.DETAIL_URL.value], params,
+                                                verbose)
 
-        product_responses = send_request([MLC.PRODUCTS_URL.value], country_id,
-                                         category_id)
-        products = product_responses[0].json()
+            time.sleep(MLC.DELAY_IN_SECS.value)
 
-        print(f'{products["paging"]["total"]} items found in this category')
-        print(f'The current page displays {products["paging"]["limit"]} items')
+            description = ""
+            if description_responses:
+                try:
+                    description = description_responses[0].json()['plain_text']
+                except Exception:
+                    description = "{PROBLEM OBTAINING THIS ITEM'S DESCRIPTION}"
 
-        print('Trying to find "Playstation" items\n')
+            image = ""
+            if img_responses:
+                try:
+                    image = img_responses[0].json()['pictures'][0]['secure_url']
+                except Exception:
+                    image = "{PROBLEM OBTAINING THIS ITEM'S IMAGE URL}"
 
-        playstations = _find_contains_among_records(products['results'],
-                                                    'Playstation', 'title')
+            records.append({
+                'name': product['title'],
+                'description': description,
+                'price': product['price'],
+                'image': image,
+                'url': product['permalink']
+            })
 
-        print(playstations)
+            time.sleep(MLC.DELAY_IN_SECS.value)
 
-    elif site == 1:        
+        with open(MLC.EXPORT_FILE_PATH.value, 'w') as export_file:
+            export_file.write(json.dumps(records, indent = 4))
+
+        print(f'Finished scraping! All results are in {MLC.EXPORT_FILE_PATH}')
+    elif site == 1:
         process = CrawlerProcess()
         process.crawl(OLXSpider, start_urls = [OLX.PRODUCTS_URL.value])
         process.start()
-    elif site == 2:        
+    elif site == 2:
         process = CrawlerProcess()
         process.crawl(CGamerSpider, start_urls = CGamer.PRODUCT_URLS.value)
         process.start()
