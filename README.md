@@ -39,9 +39,9 @@ At present only the "scraper" module has been implemented (an initial draft/appr
 
 To run, use 
 
-On Windows: `python .\scraper\scraper.py --site=<index> [--verbose=<0|1>]`
+On Windows: `python .\scraper\scraper.py --site=<index> [--verbose]`
 
-On Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose=<0|1>]`
+On Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose]`
 
 The indexes for the sites are:
 
@@ -51,6 +51,6 @@ The indexes for the sites are:
 
 2: ColombiaGamer
 
-...
+*(Other sites are still work in progress...)*
 
-The optional `verbose` argument enables to see detailed information about the response bodies from the performed requests to the APIs
+The optional `verbose` argument enables to see detailed information about the response bodies from the performed requests to the APIs.

@@ -31,41 +31,35 @@ def _find_contains_among_records(records_collection, match, prop):
             if match.upper() in record[prop].upper()]
 
 
-@click.command()
-@click.option('--site', help = 'The index of the site to scrap', type = int,
-              required = True)
-@click.option('--verbose', help = 'Indicate whether or not to show additional '
-              'information in the output (show API responses)', default = 0)
-def run(site, verbose):
+def _get_all_mercadolibre_urls():
     """
-    This module retrieves the list of products from the Consoles and Video
-    Games category within the selected e-commerce site.
-
-    The indexes for the sites are:
-
-    0: MercadoLibre\n
-    1: OLX\n
-    2: ColombiaGamer
-
-    Windows Use: `python .\scraper\scraper.py --site=<index> [--verbose=<0|1>]`
-
-    Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose=<0|1>]`
+    Generates a list of MercadoLibre product URLs for scraping (item offsets)
     """
-    if site == 0:
-        product_responses = apis.send_request([MLC.PRODUCTS_URL.value],
-                                              verbose = verbose)
-        products = product_responses[0].json()['results']
+    urls = []
 
-        records = []
+    for coef in range(0, MLC.MAX_OFFSET.value // MLC.LIMIT.value + 1):
+        params = f'&offset={coef * MLC.LIMIT.value}&limit={MLC.LIMIT.value}'
+        urls.append(f'{MLC.PRODUCTS_URL.value}{params}')
 
-        print(f'Going to scrap {len(products)} items')
+    return urls
+
+
+def _scrap_mercadolibre_product_pages(product_responses, verbose):
+    """
+    Scraps MercadoLibre 
+    """
+    records = []
+        
+    for i, product_response in enumerate(product_responses):
+        products = product_response.json()['results']
+
+        print(f'Going to scrap {len(products)} items from page {i+1}')
 
         for product in products:
             params = { MLC.PRODUCT_ID_PARAM.value: product['id'] }
 
             description_responses = apis.send_request([MLC.DESC_URL.value],
                                                     params, verbose)
-
 
             time.sleep(MLC.DELAY_IN_SECS.value)
 
@@ -98,10 +92,57 @@ def run(site, verbose):
 
             time.sleep(MLC.DELAY_IN_SECS.value)
 
-        with open(MLC.EXPORT_FILE_PATH.value, 'w') as export_file:
-            export_file.write(json.dumps(records, indent = 4))
+    return records
 
-        print(f'Finished scraping! All results are in {MLC.EXPORT_FILE_PATH}')
+
+@click.command()
+@click.option('--site', help = 'The index of the site to scrap', type = int,
+              required = True)
+@click.option('--verbose', help = 'If present, show additional information in'
+              'the output (show full API responses)', is_flag = True)
+def run(site, verbose):
+    """
+    This module retrieves the list of products from the Consoles and Video
+    Games category within the selected e-commerce site.
+
+    The indexes for the sites are:
+
+    0: MercadoLibre\n
+    1: OLX\n
+    2: ColombiaGamer
+
+    Windows Use: 
+    
+        `python .\scraper\scraper.py --site=<index> [--verbose]`
+
+    Linux/Unix Use:
+    
+        `python3 ./scraper/scraper.py --site=<index> [--verbose]`
+    """
+    if site == 0:
+        product_responses = []
+        urls = _get_all_mercadolibre_urls()
+
+        for i, url in enumerate(urls):
+            response = apis.send_request([url], verbose = verbose)
+            product_responses.append(response[0])
+            time.sleep(MLC.DELAY_IN_SECS.value)
+
+            records = []
+        
+            records = _scrap_mercadolibre_product_pages(product_responses,
+                                                        verbose)
+
+            index = f'{i}'.zfill(3)
+            file_name = MLC.EXPORT_FILE_PATH.value.replace('.json',
+                                                           f'{index}.json')
+
+            with open(file_name, 'w', encoding = 'utf8') as export_file:
+                json.dump(records, export_file, indent = 4, ensure_ascii = False)
+            
+            print(f'Done {i+1} of {MLC.MAX_OFFSET.value // MLC.LIMIT.value}')
+
+        print(f'Finished scraping MercadoLibre!')
     elif site == 1:
         process = CrawlerProcess()
         process.crawl(OLXSpider, start_urls = [OLX.PRODUCTS_URL.value])
