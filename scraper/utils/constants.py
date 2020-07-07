@@ -2,14 +2,17 @@
 This module holds the scraper's configuration constants
 """
 import os
+import sys
 import urllib.parse
 from enum import Enum
 
 
 def _get_test_products(path, html_desc = False):
     """
-    Creates a list of test products
+    Creates a list of test products with the specified test path. The html_desc
+    parameter indicates whether the expected description is plain text or HTML
     """
+    PROTOCOL = 'file:///' if sys.platform.startswith('win') else 'file://'
     EXPECTED_DESCS = [
         'Ultima consola de Nintendo. Con controles extra.',
         'Completamente nuevo. Color blanco. 33 juegos.',
@@ -21,9 +24,9 @@ def _get_test_products(path, html_desc = False):
             'description': EXPECTED_DESCS[0] if not html_desc
                            else f'<p>{EXPECTED_DESCS[0]}</p>',
             'price': '$ 1.000.000',
-            'image': urllib.parse.quote(f'file:///{path}/switch.jpg',
+            'image': urllib.parse.quote(f'{PROTOCOL}{path}/switch.jpg',
                                         safe = '/:'),
-            'url': urllib.parse.quote(f'file:///{path}/switch_mock.html',
+            'url': urllib.parse.quote(f'{PROTOCOL}{path}/switch_mock.html',
                                       safe = '/:')
         },
         {
@@ -31,9 +34,9 @@ def _get_test_products(path, html_desc = False):
             'description': EXPECTED_DESCS[1] if not html_desc
                            else f'<p>{EXPECTED_DESCS[1]}</p>',
             'price': '$ 1.350.000',
-            'image': urllib.parse.quote(f'file:///{path}/play.jpg',
+            'image': urllib.parse.quote(f'{PROTOCOL}{path}/play.jpg',
                                         safe = '/:'),
-            'url': urllib.parse.quote(f'file:///{path}/playstation_mock.html',
+            'url': urllib.parse.quote(f'{PROTOCOL}{path}/playstation_mock.html',
                                       safe = '/:')
         },
         {
@@ -41,9 +44,9 @@ def _get_test_products(path, html_desc = False):
             'description': EXPECTED_DESCS[2] if not html_desc
                            else f'<p>{EXPECTED_DESCS[2]}</p>',
             'price': '$ 1.550.000',
-            'image': urllib.parse.quote(f'file:///{path}/xbox.jpg',
+            'image': urllib.parse.quote(f'{PROTOCOL}{path}/xbox.jpg',
                                         safe = '/:'),
-            'url': urllib.parse.quote(f'file:///{path}/xbox_mock.html',
+            'url': urllib.parse.quote(f'{PROTOCOL}{path}/xbox_mock.html',
                                       safe = '/:')
         }
     ]
