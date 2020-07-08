@@ -98,7 +98,7 @@ class ColombiaGamerConfig(Enum):
     PRODUCT_URLS = [
         'https://www.colombiagamer.com.co/productos/xbox-one',
         'https://www.colombiagamer.com.co/productos/playstation-4',
-        'https://www.colombiagamer.com.co/productos/nintendo-switch'
+        'https://www.colombiagamer.com.co/productos/nintendo-switch?limit=24'
     ]
     SPIDER_NAME = 'cgamerspider'
     EXPORT_FILE_PATH = 'export/cgamer_items.json'
