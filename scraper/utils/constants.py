@@ -7,6 +7,11 @@ import urllib.parse
 from enum import Enum
 
 
+HEADERS = {
+    'Content-Type': 'application/json'
+}
+
+
 def _get_test_products(path, html_desc = False):
     """
     Creates a list of test products with the specified test path. The html_desc
@@ -52,11 +57,6 @@ def _get_test_products(path, html_desc = False):
     ]
 
 
-HEADERS = {
-    'Content-Type': 'application/json'
-}
-
-
 class MercadoLibreConfig(Enum):
     """
     This enum provides configuration constants for MercadoLibre scraping
@@ -71,6 +71,8 @@ class MercadoLibreConfig(Enum):
     DESC_URL = f'{DETAIL_URL}/description'
     EXPORT_FILE_PATH = 'export/ml_items.json'
     DELAY_IN_SECS = 1
+    MAX_OFFSET = 1000
+    LIMIT = 50
 
 
 class OLXConfig(Enum):
@@ -96,7 +98,7 @@ class ColombiaGamerConfig(Enum):
     PRODUCT_URLS = [
         'https://www.colombiagamer.com.co/productos/xbox-one',
         'https://www.colombiagamer.com.co/productos/playstation-4',
-        'https://www.colombiagamer.com.co/productos/nintendo-switch'
+        'https://www.colombiagamer.com.co/productos/nintendo-switch?limit=24'
     ]
     SPIDER_NAME = 'cgamerspider'
     EXPORT_FILE_PATH = 'export/cgamer_items.json'
