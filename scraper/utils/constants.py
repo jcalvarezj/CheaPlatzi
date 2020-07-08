@@ -135,3 +135,46 @@ class GamePlanetConfig(Enum):
     TEST_FILES = ['gameplanet_mock.html']
     TEST_PRODUCTS = _get_test_products(TEST_PATH)
 
+class MixUpConfig(Enum):
+    """
+    This enum provides configuration constants for GamePlanet scraping
+    """
+    PRODUCT_URLS = [
+        'https://www.mixup.com.mx/mixup/Productos.aspx?etq=GAMNIN&etqP=GAM&bf=',
+        'https://www.mixup.com.mx/mixup/Productos.aspx?etq=GAMPS&etqP=GAM&bf=',
+        'https://www.mixup.com.mx/mixup/Productos.aspx?etq=GAMXBOX&etqP=GAM&bf=',
+        'https://www.mixup.com.mx/mixup/Productos.aspx?etq=GAMCON&etqP=GAM&bf='
+    ]
+    SPIDER_NAME = 'mixupspider'
+    EXPORT_FILE_PATH = 'export/mixup_items.json'
+    ITEM_CLASS_1 = 'item'
+    ITEM_CLASS_2 = 'cover'
+    TITLE_CLASS = 'megatitulo'
+    DESC_CLASS = 'resenia'
+    PRICE_CLASS = 'preciolista'
+    IMAGE_ID = 'imgProd'
+    TEST_PATH = f'{os.getcwd()}/scraper/test/mixup_mocks'
+    TEST_FILES = ['mixup_mock.html']
+    TEST_PRODUCTS = _get_test_products(TEST_PATH)
+
+class SearsConfig(Enum):
+    """
+    This enum provides configuration constants for GamePlanet scraping
+    """
+    PRODUCT_URLS = [
+        'https://www.sears.com.mx/categoria/16659/xbox/',
+        'https://www.sears.com.mx/categoria/16667/playstation/',
+        'https://www.sears.com.mx/categoria/16663/nintendo/',
+    ]
+    SPIDER_NAME = 'searspider'
+    EXPORT_FILE_PATH = 'export/sears_items.json'
+    ITEM_CLASS = 'vistaRapida'
+    LINK_CLASS = 'linkProducto'
+    TITLE_CLASS = 'productMainContainer'
+    DESC_CLASS = 'viewDescrip'
+    PRICE_CLASS = 'total'
+    IMAGE_CLASS = 'carrusel-producto'
+    TEST_PATH = f'{os.getcwd()}/scraper/test/sears_mocks'
+    TEST_FILES = ['sears_mock.html']
+    TEST_PRODUCTS = _get_test_products(TEST_PATH)
+

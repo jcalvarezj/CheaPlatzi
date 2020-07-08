@@ -2,7 +2,7 @@
 This module contains all the scrapy spiders for the scraper module
 """
 import scrapy
-from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer, GamePlanetConfig as GamePl
+from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer, GamePlanetConfig as GamePl, MixUpConfig as MU, SearsConfig as SEA
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
@@ -46,7 +46,7 @@ class OLXSpider(scrapy.Spider):
 
         image_xp = (f'//div[contains(@class, "{OLX.IMG_DIV_CLASS.value}")]//'
                     'img/@src')
-        image = response.urljoin(response.xpath(image_xp).get())
+        image = response.xpath(image_xp).get()
 
         yield {
             'name': name,
@@ -207,3 +207,124 @@ class GamePlSpider(scrapy.Spider):
         for url in product_urls:
             self.log(url.get_attribute('href'))
             yield response.follow(url.get_attribute('href'), callback = self.parse_product)
+
+class MixUpSpider(scrapy.Spider):
+    """
+    This spider scraps products from the ColombiaGamer e-commerce site
+    """
+    name = MU.SPIDER_NAME.value
+    custom_settings = {
+        'FEEDS': {
+            MU.EXPORT_FILE_PATH.value: {
+                'format': 'json',
+                'encoding': 'utf-8',
+                'fields': ['name', 'description', 'price', 'image', 'url'],
+                'indent': 4
+            }
+        },
+        'FEED_EXPORT_ENCODING': 'utf-8',
+        'DEPTH_LIMIT': 1,
+        'AUTOTHROTTLE_ENABLED': True
+    }
+
+
+    def parse_product(self, response):
+        """
+        Retrieves product information from the product detail page, and exports
+        it to the output json
+        """
+        self.log(f'\n>>>>> ATTEMPTING TO SCRAP {response.url}<<<<<\n')
+
+        name_xp = f'//div[@class="{MU.TITLE_CLASS.value}"]/text()'
+        name = response.xpath(name_xp).get()
+
+        desc_xp = f'//div[@class="{MU.DESC_CLASS.value}"]//div[@class = "texto"]/text()'
+        description = response.xpath(desc_xp).get()
+        description = description.strip()
+
+        price_xp = f'//span[contains(@class, "{MU.PRICE_CLASS.value}")]/text()'
+        price = response.xpath(price_xp)[1].get()
+        price = price.strip()          
+
+        image_xp = (f'//img[@id="{MU.IMAGE_ID.value}"]/@src')
+        image = response.urljoin(response.xpath(image_xp).get())
+
+        yield {
+            'name': name,
+            'description': description,
+            'price': price,
+            'image': image,
+            'url': response.url
+        }
+
+
+    def parse(self, response):
+        """
+        Retrieves information for all products in terms of the fields: name,
+        description, price, image, and url
+        """
+        product_xp = (f'//div[@class = "{MU.ITEM_CLASS_1.value}"]/div[@class = "{MU.ITEM_CLASS_2.value}"]/a/@href')
+        product_urls = response.xpath(product_xp).getall()
+
+        for url in product_urls:
+            yield response.follow(url, callback = self.parse_product)
+
+class SearSpider(scrapy.Spider):
+    """
+    This spider scraps products from the ColombiaGamer e-commerce site
+    """
+    name = SEA.SPIDER_NAME.value
+    custom_settings = {
+        'FEEDS': {
+            SEA.EXPORT_FILE_PATH.value: {
+                'format': 'json',
+                'encoding': 'utf-8',
+                'fields': ['name', 'description', 'price', 'image', 'url'],
+                'indent': 4
+            }
+        },
+        'FEED_EXPORT_ENCODING': 'utf-8',
+        'DEPTH_LIMIT': 1,
+        'AUTOTHROTTLE_ENABLED': True
+    }
+
+
+    def parse_product(self, response):
+        """
+        Retrieves product information from the product detail page, and exports
+        it to the output json
+        """
+        self.log(f'\n>>>>> ATTEMPTING TO SCRAP {response.url}<<<<<\n')
+
+        name_xp = f'//div[@class = "{SEA.TITLE_CLASS.value}"]/h1/text()'
+        name = response.xpath(name_xp).get()
+
+        desc_xp = f'//ul[contains(@class, {SEA.DESC_CLASS.value})]/li[contains(@class, laDescrip)]/p/text()'
+        description = response.xpath(desc_xp).getall()
+        description = description[0].strip()
+
+        price_xp = f'//p[@class = "{SEA.PRICE_CLASS.value}"]/text()'
+        price = response.xpath(price_xp).get()
+
+        image_xp = (f'//ul[contains(@class,{SEA.IMAGE_CLASS.value})]/li/img/@src')
+        image = response.urljoin(response.xpath(image_xp)[0].get())
+
+        yield {
+            'name': name,
+            'description': description,
+            'price': price,
+            'image': image,
+            'url': response.url
+        }
+
+
+    def parse(self, response):
+        """
+        Retrieves information for all products in terms of the fields: name,
+        description, price, image, and url
+        """
+        product_xp = (f'//div[@class = "{SEA.ITEM_CLASS.value}"]/a[@class = "{SEA.LINK_CLASS.value}"]/@href')
+        product_urls = response.xpath(product_xp).getall()
+
+        for url in product_urls:
+            yield response.follow(url, callback = self.parse_product)
