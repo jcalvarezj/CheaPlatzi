@@ -39,9 +39,9 @@ At present only the "scraper" module has been implemented (an initial draft/appr
 
 To run, use 
 
-On Windows: `python .\scraper\scraper.py --site=<index> [--verbose]`
+On Windows: `python .\scraper\scraper.py --site=<index> [--verbose] [--store]`
 
-On Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose]`
+On Linux/Unix: `python3 ./scraper/scraper.py --site=<index> [--verbose] [--store]`
 
 The indexes for the sites are:
 
@@ -53,4 +53,4 @@ The indexes for the sites are:
 
 *(Other sites are still work in progress...)*
 
-The optional `verbose` argument enables to see detailed information about the response bodies from the performed requests to the APIs.
+The optional `verbose` flag enables to see detailed information about the response bodies from the performed requests to the APIs, and `store` enables the scraper to automatically send requests to the backend's database API to store the scraped records.
