@@ -72,7 +72,7 @@ class MercadoLibreConfig(Enum):
     EXPORT_FILE_PATH = 'export/ml_items.json'
     DELAY_IN_SECS = 1
     MAX_OFFSET = 1000
-    LIMIT = 5
+    LIMIT = 50
 
 
 class OLXConfig(Enum):
