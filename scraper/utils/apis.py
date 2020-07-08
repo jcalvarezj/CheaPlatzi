@@ -25,7 +25,7 @@ def _parse_endpoint(endpoint, params_dict):
     return parsed_endpoint
 
 
-def send_request(endpoints, params_dict = {}, verbose = False):
+def send_request(endpoints, params_dict = {}, verbose = False, delay = None):
     """
     Attempts to send a request with for the specified list of endpoints.
     If the endpoints have $SITE_ID and $CATEGORY_ID URL parameters, the 
