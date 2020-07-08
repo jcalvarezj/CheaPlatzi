@@ -82,7 +82,6 @@ class ColombiaGamerSpider(scrapy.Spider):
             }
         },
         'FEED_EXPORT_ENCODING': 'utf-8',
-        'DEPTH_LIMIT': 1,
         'AUTOTHROTTLE_ENABLED': True
     }
 
@@ -121,6 +120,17 @@ class ColombiaGamerSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
+
+        list_items = response.xpath('//nav[@role="pagination"]//li/@class')
+        page_buttons_xp = '//nav[@role="pagination"]//a/@href'
+        page_buttons = response.xpath(page_buttons_xp).getall()
+
+        if len(page_buttons) > 1:
+            last_item_class = list_items[-1]
+            if last_item_class != 'active':
+                next_page = page_buttons[-2]
+                yield response.follow(next_page, callback = self.parse)
+
         product_xp = (f'//div[contains(@class, "{CGamer.ITEM_CLASS.value}")]//'
                       'h2/a/@href')
         product_urls = response.xpath(product_xp).getall()
