@@ -109,3 +109,27 @@ class ColombiaGamerConfig(Enum):
     TEST_FILES = ['cgamer_switch_mock.html', 'cgamer_playstation_mock.html',
                   'cgamer_xbox_mock.html']
     TEST_PRODUCTS = _get_test_products(TEST_PATH, True)
+
+    
+class GamePlanetConfig(Enum):
+    """
+    This enum provides configuration constants for GamePlanet scraping
+    """
+    PRODUCT_URLS = [
+        'https://gameplanet.com/catalogo/video-juegos/hardware.html?plafatorma=',
+        'https://gameplanet.com/catalogo/video-juegos/software.html?plataforma=',
+    ]
+    XBOX_ID = 660
+    PLAYSTATION_ID = 667
+    SWITCH_ID = 671
+    SPIDER_NAME = 'gameplspider'
+    EXPORT_FILE_PATH = 'export/gamepl_items.json'
+    ITEM_CLASS = 'catalog-products-new'
+    TITLE_CLASS = 'h1title'
+    DESC_CLASS = 'std'
+    PRICE_CLASS = 'domicilio-price'
+    IMAGE_ID = 'main_image'
+    TEST_PATH = f'{os.getcwd()}/scraper/test/gameplanet_mocks'
+    TEST_FILES = ['gameplanet_mock.html']
+    TEST_PRODUCTS = _get_test_products(TEST_PATH)
+
