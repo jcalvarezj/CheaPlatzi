@@ -46,7 +46,7 @@ def _get_all_mercadolibre_urls():
 
 def _scrap_mercadolibre_product_pages(product_responses, verbose):
     """
-    Scraps MercadoLibre 
+    Scraps MercadoLibre's product pages from the passed responses
     """
     records = []
         
