@@ -112,6 +112,7 @@ def _scrap_mercadolibre_product_pages(product_responses, verbose):
                     image = "{PROBLEM OBTAINING THIS ITEM'S IMAGE URL}"
 
             records.append({
+                'id_type_product': None,
                 'id_ecommerce': SITE_IDS['MercadoLibre'],
                 'name': product['title'],
                 'description': description,
