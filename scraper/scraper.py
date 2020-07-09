@@ -8,9 +8,38 @@ import json
 import click
 import utils.apis as apis
 from scrapy.crawler import CrawlerProcess
-from utils.constants import MercadoLibreConfig as MLC
+from utils.constants import MercadoLibreConfig as MLC, BACKEND_URL, SITE_IDS
 from utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider, GamePlSpider, MixUpSpider, SearSpider
 from utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer, GamePlanetConfig as GamePl, SearsConfig as SEAConfig, MixUpConfig as MUConfig
+
+
+def _store_in_remote_database(results_path, scrap_api = False, n_pages = 0,
+                              verbose = False):
+    """
+    This function sends the scraped data found as json files to the remote
+    database through POST requests
+
+    results_path is the base path to the file
+    scrap_api indicates whether data has been scraped through an API
+    n_pages indicates the number of scraped pages through an API
+    """
+    print('Sending requests to the backend\'s database API')
+
+    if scrap_api:
+        data = []
+
+        for i in range(0, n_pages):
+            index = f'{i}'.zfill(3)
+            file_name = results_path.replace('.json', f'{index}.json')
+
+            with open(file_name, encoding = 'utf-8') as data_file:
+                data.append(json.dumps(json.load(data_file)))
+            
+        apis.store_request(data, BACKEND_URL, verbose)
+    else:
+        print('-- Not implemented yet --')
+
+    print('Finished sending data to the backend')
 
 
 def _find_exact_among_records(records_collection, match, prop):
@@ -53,17 +82,17 @@ def _scrap_mercadolibre_product_pages(product_responses, verbose):
     for i, product_response in enumerate(product_responses):
         products = product_response.json()['results']
 
-        print(f'Going to scrap {len(products)} items from page {i+1}')
+        print(f'Going to scrap {len(products)} items')
 
         for product in products:
             params = { MLC.PRODUCT_ID_PARAM.value: product['id'] }
 
-            description_responses = apis.send_request([MLC.DESC_URL.value],
+            description_responses = apis.scrap_request([MLC.DESC_URL.value],
                                                     params, verbose)
 
             time.sleep(MLC.DELAY_IN_SECS.value)
 
-            img_responses = apis.send_request([MLC.DETAIL_URL.value], params,
+            img_responses = apis.scrap_request([MLC.DETAIL_URL.value], params,
                                                 verbose)
 
             time.sleep(MLC.DELAY_IN_SECS.value)
@@ -83,6 +112,8 @@ def _scrap_mercadolibre_product_pages(product_responses, verbose):
                     image = "{PROBLEM OBTAINING THIS ITEM'S IMAGE URL}"
 
             records.append({
+                'id_type_product': None,
+                'id_ecommerce': SITE_IDS['MercadoLibre'],
                 'name': product['title'],
                 'description': description,
                 'price': product['price'],
@@ -98,9 +129,11 @@ def _scrap_mercadolibre_product_pages(product_responses, verbose):
 @click.command()
 @click.option('--site', help = 'The index of the site to scrap', type = int,
               required = True)
-@click.option('--verbose', help = 'If present, show additional information in'
+@click.option('--verbose', help = 'If present, show additional information in '
               'the output (show full API responses)', is_flag = True)
-def run(site, verbose):
+@click.option('--store', help = 'This flag enables sending requests to the '
+              'backend\'s database API to store the records', is_flag = True)
+def run(site, verbose, store):
     """
     This module retrieves the list of products from the Consoles and Video
     Games category within the selected e-commerce site.
@@ -113,36 +146,38 @@ def run(site, verbose):
 
     Windows Use: 
     
-        `python .\scraper\scraper.py --site=<index> [--verbose]`
+        `python .\scraper\scraper.py --site=<index> [--verbose] [--store]`
 
     Linux/Unix Use:
     
-        `python3 ./scraper/scraper.py --site=<index> [--verbose]`
+        `python3 ./scraper/scraper.py --site=<index> [--verbose] [--store]`
     """
     if site == 0:
-        product_responses = []
         urls = _get_all_mercadolibre_urls()
+        N = MLC.MAX_OFFSET.value // MLC.LIMIT.value + 1
 
         for i, url in enumerate(urls):
-            response = apis.send_request([url], verbose = verbose)
+            product_responses = []
+            response = apis.scrap_request([url], verbose = verbose)
             product_responses.append(response[0])
             time.sleep(MLC.DELAY_IN_SECS.value)
 
-            records = []
-        
             records = _scrap_mercadolibre_product_pages(product_responses,
                                                         verbose)
-
             index = f'{i}'.zfill(3)
             file_name = MLC.EXPORT_FILE_PATH.value.replace('.json',
                                                            f'{index}.json')
 
-            with open(file_name, 'w', encoding = 'utf8') as export_file:
-                json.dump(records, export_file, indent = 4, ensure_ascii = False)
+            with open(file_name, 'w', encoding = 'utf-8') as export_file:
+                json.dump(records, export_file, ensure_ascii = False)
             
-            print(f'Done {i+1} of {MLC.MAX_OFFSET.value // MLC.LIMIT.value}')
+            print(f'Scraped page {i+1} of {N}')
 
-        print(f'Finished scraping MercadoLibre!')
+        print(f'Finished scraping MercadoLibre!\n')
+
+        if store:
+            _store_in_remote_database(MLC.EXPORT_FILE_PATH.value, True, N, 
+                                      verbose)
     elif site == 1:
         process = CrawlerProcess()
         process.crawl(OLXSpider, start_urls = [OLX.PRODUCTS_URL.value])
