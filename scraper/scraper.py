@@ -9,8 +9,8 @@ import click
 import utils.apis as apis
 from scrapy.crawler import CrawlerProcess
 from utils.constants import MercadoLibreConfig as MLC
-from utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider, GamePlSpider
-from utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer, GamePlanetConfig as GamePl
+from utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider, GamePlSpider, MixUpSpider, SearSpider
+from utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer, GamePlanetConfig as GamePl, SearsConfig as SEAConfig, MixUpConfig as MUConfig
 
 
 def _find_exact_among_records(records_collection, match, prop):
@@ -154,6 +154,14 @@ def run(site, verbose):
     elif site == 3:
         process = CrawlerProcess()
         process.crawl(GamePlSpider, start_urls = GamePl.PRODUCT_URLS.value)
+        process.start()
+    elif site == 4:
+        process = CrawlerProcess()
+        process.crawl(SearSpider, start_urls = SEAConfig.PRODUCT_URLS.value)
+        process.start()
+    elif site == 5:
+        process = CrawlerProcess()
+        process.crawl(MixUpSpider, start_urls = MUConfig.PRODUCT_URLS.value)
         process.start()
     else:
         print('Invalid option for site')

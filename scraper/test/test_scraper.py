@@ -113,23 +113,23 @@ def sears_setup():
 
 #     cleanup(file_path)
 
-# def test_gamepl_scrapper_happy_path_json_data_exported():
-#     """
-#     This test case checks if the scraper generates the right json file after
-#     scraping a mock with CGamer's site structure
-#     """
-#     file_path = f'{GamePl.EXPORT_FILE_PATH.value}'
-#     cleanup(file_path)
-#     gamepl_setup()
+def test_gamepl_scrapper_happy_path_json_data_exported():
+    """
+    This test case checks if the scraper generates the right json file after
+    scraping a mock with CGamer's site structure
+    """
+    file_path = f'{GamePl.EXPORT_FILE_PATH.value}'
+    cleanup(file_path)
+    gamepl_setup()
 
-#     assert os.path.exists(file_path), f'expected the file {file_path} to exist'
+    assert os.path.exists(file_path), f'expected the file {file_path} to exist'
 
-#     with open(file_path) as json_file:
-#         data = json.load(json_file)
-#         assert data == GamePl.TEST_PRODUCTS.value, \
-#                 'the exported json file does not match the expected result'
+    with open(file_path) as json_file:
+        data = json.load(json_file)
+        assert data == GamePl.TEST_PRODUCTS.value, \
+                'the exported json file does not match the expected result'
 
-#     cleanup(file_path)
+    # cleanup(file_path)
 
 # def test_mixup_scrapper_happy_path_json_data_exported():
 #     """
@@ -149,20 +149,20 @@ def sears_setup():
 
 #     cleanup(file_path)
 
-def test_sears_scrapper_happy_path_json_data_exported():
-    """
-    This test case checks if the scraper generates the right json file after
-    scraping a mock with Sears's site structure
-    """
-    file_path = f'{SEA.EXPORT_FILE_PATH.value}'
-    cleanup(file_path)
-    sears_setup()
+# def test_sears_scrapper_happy_path_json_data_exported():
+#     """
+#     This test case checks if the scraper generates the right json file after
+#     scraping a mock with Sears's site structure
+#     """
+#     file_path = f'{SEA.EXPORT_FILE_PATH.value}'
+#     cleanup(file_path)
+#     sears_setup()
 
-    assert os.path.exists(file_path), f'expected the file {file_path} to exist'
+#     assert os.path.exists(file_path), f'expected the file {file_path} to exist'
 
-    with open(file_path) as json_file:
-        data = json.load(json_file)
-        assert data == SEA.TEST_PRODUCTS.value, \
-                'the exported json file does not match the expected result'
+#     with open(file_path) as json_file:
+#         data = json.load(json_file)
+#         assert data == SEA.TEST_PRODUCTS.value, \
+#                 'the exported json file does not match the expected result'
 
-    cleanup(file_path)
+#     cleanup(file_path)

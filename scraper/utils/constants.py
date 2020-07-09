@@ -171,7 +171,7 @@ class SearsConfig(Enum):
     ITEM_CLASS = 'vistaRapida'
     LINK_CLASS = 'linkProducto'
     TITLE_CLASS = 'productMainContainer'
-    DESC_CLASS = 'viewDescrip'
+    DESC_CLASS = 'yotpo'
     PRICE_CLASS = 'total'
     IMAGE_CLASS = 'carrusel-producto'
     TEST_PATH = f'{os.getcwd()}/scraper/test/sears_mocks'

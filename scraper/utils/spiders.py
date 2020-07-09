@@ -68,7 +68,6 @@ class OLXSpider(scrapy.Spider):
         for url in product_urls:
             yield response.follow(url, callback = self.parse_product)
 
-
 class ColombiaGamerSpider(scrapy.Spider):
     """
     This spider scraps products from the ColombiaGamer e-commerce site
@@ -177,7 +176,7 @@ class GamePlSpider(scrapy.Spider):
         desc_xp = f'//div[@class="{GamePl.DESC_CLASS.value}"]'
         description = self.driver.find_elements_by_xpath(desc_xp)[0].get_attribute('innerText')
 
-        price_xp = f'//div[contains(@class, {GamePl.PRICE_CLASS.value})]//span'
+        price_xp = f'//div[contains(@class, "{GamePl.PRICE_CLASS.value}")]//span'
         price = self.driver.find_elements_by_xpath(price_xp)[0].get_attribute('innerText')
 
         image_xp = (f'//img[@id = "{GamePl.IMAGE_ID.value}"]')
@@ -223,7 +222,6 @@ class MixUpSpider(scrapy.Spider):
             }
         },
         'FEED_EXPORT_ENCODING': 'utf-8',
-        'DEPTH_LIMIT': 1,
         'AUTOTHROTTLE_ENABLED': True
     }
 
@@ -263,6 +261,8 @@ class MixUpSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
+
+        
         product_xp = (f'//div[@class = "{MU.ITEM_CLASS_1.value}"]/div[@class = "{MU.ITEM_CLASS_2.value}"]/a/@href')
         product_urls = response.xpath(product_xp).getall()
 
@@ -284,7 +284,6 @@ class SearSpider(scrapy.Spider):
             }
         },
         'FEED_EXPORT_ENCODING': 'utf-8',
-        'DEPTH_LIMIT': 1,
         'AUTOTHROTTLE_ENABLED': True
     }
 
@@ -299,9 +298,8 @@ class SearSpider(scrapy.Spider):
         name_xp = f'//div[@class = "{SEA.TITLE_CLASS.value}"]/h1/text()'
         name = response.xpath(name_xp).get()
 
-        desc_xp = f'//ul[contains(@class, {SEA.DESC_CLASS.value})]/li[contains(@class, laDescrip)]/p/text()'
-        description = response.xpath(desc_xp).getall()
-        description = description[0].strip()
+        desc_xp = f'//div[@class = "{SEA.DESC_CLASS.value} yotpo-main-widget"]/@data-description'
+        description = response.xpath(desc_xp)[0].get()
 
         price_xp = f'//p[@class = "{SEA.PRICE_CLASS.value}"]/text()'
         price = response.xpath(price_xp).get()
@@ -323,6 +321,16 @@ class SearSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
+        list_items = response.xpath('//div[contains(@class, "paginador")]/ul/li/a')
+        page_buttons_xp = '//div[contains(@class, "paginador")]/ul/li/a/@href'
+        page_buttons = response.xpath(page_buttons_xp).getall()
+
+        if len(page_buttons) > 1:
+            last_item_class = list_items[-1]
+            if last_item_class.xpath('@class').get() != 'active':
+                next_page = page_buttons[-1]
+                yield response.follow(response.urljoin(next_page), callback = self.parse)
+
         product_xp = (f'//div[@class = "{SEA.ITEM_CLASS.value}"]/a[@class = "{SEA.LINK_CLASS.value}"]/@href')
         product_urls = response.xpath(product_xp).getall()
 
