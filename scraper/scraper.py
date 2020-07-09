@@ -27,7 +27,6 @@ def _store_in_remote_database(results_path, scrap_api = False, n_pages = 0,
 
     if scrap_api:
         data = []
-
         for i in range(0, n_pages):
             index = f'{i}'.zfill(3)
             file_name = results_path.replace('.json', f'{index}.json')
@@ -37,7 +36,11 @@ def _store_in_remote_database(results_path, scrap_api = False, n_pages = 0,
             
         apis.store_request(data, BACKEND_URL, verbose)
     else:
-        print('-- Not implemented yet --')
+        data = ""
+        with open(results_path, encoding = 'utf-8') as data_file:
+            data = json.dumps(json.load(data_file))
+        
+        apis.store_request([data], BACKEND_URL, verbose)
 
     print('Finished sending data to the backend')
 
@@ -176,16 +179,28 @@ def run(site, verbose, store):
         print(f'Finished scraping MercadoLibre!\n')
 
         if store:
-            _store_in_remote_database(MLC.EXPORT_FILE_PATH.value, True, N, 
+            _store_in_remote_database(MLC.EXPORT_FILE_PATH.value, True, N,
                                       verbose)
     elif site == 1:
         process = CrawlerProcess()
         process.crawl(OLXSpider, start_urls = [OLX.PRODUCTS_URL.value])
         process.start()
+
+        print(f'Finished scraping OLX!\n')
+
+        if store:
+            _store_in_remote_database(OLX.EXPORT_FILE_PATH.value,
+                                      verbose = verbose)
     elif site == 2:
         process = CrawlerProcess()
         process.crawl(CGamerSpider, start_urls = CGamer.PRODUCT_URLS.value)
         process.start()
+
+        print(f'Finished scraping ColombiaGamer!\n')
+
+        if store:
+            _store_in_remote_database(CGamer.EXPORT_FILE_PATH.value,
+                                      verbose = verbose)
     else:
         print('Invalid option for site')
 
