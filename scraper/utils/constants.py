@@ -10,6 +10,11 @@ from enum import Enum
 HEADERS = {
     'Content-Type': 'application/json'
 }
+SITE_IDS = {
+    'MercadoLibre': 1,
+    'ColombiaGamer': 2
+}
+BACKEND_URL = 'https://cheaplatzi.uc.r.appspot.com/api/product'
 
 
 def _get_test_products(path, html_desc = False):
@@ -72,7 +77,7 @@ class MercadoLibreConfig(Enum):
     EXPORT_FILE_PATH = 'export/ml_items.json'
     DELAY_IN_SECS = 1
     MAX_OFFSET = 1000
-    LIMIT = 50
+    LIMIT = 20
 
 
 class OLXConfig(Enum):
