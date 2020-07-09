@@ -5,6 +5,11 @@ import scrapy
 from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer, GamePlanetConfig as GamePl, MixUpConfig as MU, SearsConfig as SEA
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+import time
 
 
 class OLXSpider(scrapy.Spider):
@@ -17,7 +22,7 @@ class OLXSpider(scrapy.Spider):
             OLX.EXPORT_FILE_PATH.value: {
                 'format': 'json',
                 'encoding': 'utf-8',
-                'fields': ['name', 'description', 'price', 'image', 'url'],
+                'fields': ['categoria', 'id_ecommerce', 'name', 'description', 'price', 'image', 'url'],
                 'indent': 4
             }
         },
@@ -149,14 +154,20 @@ class GamePlSpider(scrapy.Spider):
             GamePl.EXPORT_FILE_PATH.value: {
                 'format': 'json',
                 'encoding': 'utf-8',
-                'fields': ['name', 'description', 'price', 'image', 'url'],
+                'fields': ['name', 'description', 'price', 'image', 'url', 'id_ecommerce', 'categoria'],
                 'indent': 4
             }
         },
         "FEED_EXPORT_ENCODING": "utf-8",
-        'DEPTH_LIMIT': 1,
         'AUTOTHROTTLE_ENABLED': True
     }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        chrome_options = Options()  
+        chrome_options.add_argument("--headless")
+        self.driver = webdriver.Chrome(ChromeDriverManager().install())
+        # chrome_options=chrome_options)
+
 
     def parse_product(self, response):
         """
@@ -165,27 +176,31 @@ class GamePlSpider(scrapy.Spider):
         """
         self.log(f'>>>>> ATTEMPTING TO SCRAP {response.url}<<<<<')
 
-        self.driver.get(response.url)
+        self.driver.implicitly_wait(2)
 
+        self.driver.get(response.url)
         name_xp = f'//h1[@class="{GamePl.TITLE_CLASS.value}"]'
         name = self.driver.find_elements_by_xpath(name_xp)[0].get_attribute('innerText')
-        
-        self.log('getting_name')
-        self.log(name)
 
         desc_xp = f'//div[@class="{GamePl.DESC_CLASS.value}"]'
         description = self.driver.find_elements_by_xpath(desc_xp)[0].get_attribute('innerText')
 
         price_xp = f'//div[contains(@class, "{GamePl.PRICE_CLASS.value}")]//span'
         price = self.driver.find_elements_by_xpath(price_xp)[0].get_attribute('innerText')
+        price = int(float(price.replace("$","").replace(",","")))
 
         image_xp = (f'//img[@id = "{GamePl.IMAGE_ID.value}"]')
         image_url = self.driver.find_elements_by_xpath(image_xp)[0].get_attribute('src')
         image = image_url
 
-        yield {
+        tag_xp = (f'//span[@class = "{GamePl.TAG_CLASS.value}"]')
+        tag_product = self.driver.find_elements_by_xpath(tag_xp)[0].get_attribute('innerText')
+
+        yield{
             'name': name,
             'description': description,
+            'id_ecommerce': 4,
+            'categoria': tag_product,
             'price': price,
             'image': image,
             'url': response.url
@@ -197,14 +212,17 @@ class GamePlSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
-        self.driver = webdriver.Chrome(ChromeDriverManager().install())
+
         self.driver.get(response.url)
+        next_xp = (f'//a[@title = "Next"]')
+        next_page = self.driver.find_elements_by_xpath(next_xp)
+        if len(next_page) > 0:
+            next_url = next_page[0].get_attribute('href')
+            yield response.follow(next_url, callback = self.parse)
+
         product_xp = (f'//div[contains(@class, "{GamePl.ITEM_CLASS.value}")]/div[@class = "row"]/div/a')
-        
         product_urls = self.driver.find_elements_by_xpath(product_xp)
-        self.log(product_urls)
         for url in product_urls:
-            self.log(url.get_attribute('href'))
             yield response.follow(url.get_attribute('href'), callback = self.parse_product)
 
 class MixUpSpider(scrapy.Spider):

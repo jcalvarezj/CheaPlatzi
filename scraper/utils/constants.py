@@ -118,12 +118,13 @@ class GamePlanetConfig(Enum):
     This enum provides configuration constants for GamePlanet scraping
     """
     PRODUCT_URLS = [
-        'https://gameplanet.com/catalogo/video-juegos/hardware.html?plafatorma=',
-        'https://gameplanet.com/catalogo/video-juegos/software.html?plataforma=',
+        f'https://gameplanet.com/catalogo/video-juegos/hardware.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=660&mode=grid',
+        f'https://gameplanet.com/catalogo/video-juegos/hardware.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=667&mode=grid',
+        f'https://gameplanet.com/catalogo/video-juegos/hardware.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=671&mode=grid',
+        f'https://gameplanet.com/catalogo/video-juegos/software.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=660&mode=grid',
+        f'https://gameplanet.com/catalogo/video-juegos/software.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=667&mode=grid',
+        f'https://gameplanet.com/catalogo/video-juegos/software.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=671&mode=grid',
     ]
-    XBOX_ID = 660
-    PLAYSTATION_ID = 667
-    SWITCH_ID = 671
     SPIDER_NAME = 'gameplspider'
     EXPORT_FILE_PATH = 'export/gamepl_items.json'
     ITEM_CLASS = 'catalog-products-new'
@@ -131,6 +132,7 @@ class GamePlanetConfig(Enum):
     DESC_CLASS = 'std'
     PRICE_CLASS = 'domicilio-price'
     IMAGE_ID = 'main_image'
+    TAG_CLASS = 'plataforma-text'
     TEST_PATH = f'{os.getcwd()}/scraper/test/gameplanet_mocks'
     TEST_FILES = ['gameplanet_mock.html']
     TEST_PRODUCTS = _get_test_products(TEST_PATH)

@@ -63,7 +63,7 @@ def mixup_setup():
     process.crawl(MixUpSpider, start_urls = fileURIs)
     process.start()
 
-def sears_setup():
+    def sears_setup():
     """
     Initializes the required conditions for testing on GamePlanet's site
     """
@@ -74,7 +74,6 @@ def sears_setup():
     process.crawl(SearSpider, start_urls = fileURIs)
     process.start()
 
-
 def test_olx_scrapper_happy_path_json_data_exported():
     """
     This test case checks if the scraper generates the right json file after
@@ -83,6 +82,7 @@ def test_olx_scrapper_happy_path_json_data_exported():
     file_path = f'{OLX.EXPORT_FILE_PATH.value}'
     cleanup(file_path)
     olx_setup()
+
 
     assert os.path.exists(file_path), f'expected the file {file_path} to exist'
 
