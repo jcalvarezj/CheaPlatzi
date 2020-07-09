@@ -33,11 +33,11 @@ def _store_in_remote_database(results_path, scrap_api = False, n_pages = 0,
             file_name = results_path.replace('.json', f'{index}.json')
 
             with open(file_name, encoding = 'utf-8') as data_file:
-                data.append(json.load(data_file))
-
+                data.append(json.dumps(json.load(data_file)))
+            
         apis.store_request(data, BACKEND_URL, verbose)
     else:
-        pass
+        print('-- Not implemented yet --')
 
     print('Finished sending data to the backend')
 
@@ -168,12 +168,11 @@ def run(site, verbose, store):
                                                            f'{index}.json')
 
             with open(file_name, 'w', encoding = 'utf-8') as export_file:
-                json.dump(records, export_file, indent = 4,
-                          ensure_ascii = False)
+                json.dump(records, export_file, ensure_ascii = False)
             
             print(f'Scraped page {i+1} of {N}')
 
-        print(f'Finished scraping MercadoLibre!')
+        print(f'Finished scraping MercadoLibre!\n')
 
         if store:
             _store_in_remote_database(MLC.EXPORT_FILE_PATH.value, True, N, 

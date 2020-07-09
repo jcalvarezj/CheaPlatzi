@@ -25,7 +25,7 @@ def _parse_endpoint(endpoint, params_dict):
     return parsed_endpoint
 
 
-def _print_response_success(response, index, expected_code, verbose):
+def _print_response_success(response, index, expected_code, verbose):    
     request_url = response.request.url
 
     if response.status_code == expected_code:
@@ -66,7 +66,7 @@ def scrap_request(endpoints, params_dict = {}, verbose = False):
                               exception_handler = _handle_exception)
 
     for i, response in enumerate(responses):
-        if response:
+        if response != None:
             _print_response_success(response, i, 200, verbose)
 
     return responses
@@ -80,12 +80,12 @@ def store_request(page_list, endpoint, verbose):
     pending_requests = []
 
     for page_data in page_list:
+        print(f'The data to send is\n{page_data}')
         pending_requests.append(grequests.post(endpoint, data = page_data,
-                                               headers = HEADERS))
-
+                                               headers = HEADERS))    
     responses = grequests.map(pending_requests, 
                               exception_handler = _handle_exception)
-
-    for i, response in enumerate(responses):
-        if response:
+    
+    for i, response in enumerate(responses):        
+        if response != None:
             _print_response_success(response, i, 201, verbose)
