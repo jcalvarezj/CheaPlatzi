@@ -33,13 +33,13 @@ def _store_in_remote_database(results_path, scrap_api = False, n_pages = 0,
 
             with open(file_name, encoding = 'utf-8') as data_file:
                 data.append(json.dumps(json.load(data_file)))
-            
+
         apis.store_request(data, BACKEND_URL, verbose)
     else:
         data = ""
         with open(results_path, encoding = 'utf-8') as data_file:
             data = json.dumps(json.load(data_file))
-        print('loaded file --- now sending...')
+
         apis.store_request([data], BACKEND_URL, verbose)
 
     print('Finished sending data to the backend')
@@ -182,9 +182,9 @@ def run(site, verbose, store):
             _store_in_remote_database(MLC.EXPORT_FILE_PATH.value, True, N,
                                       verbose)
     elif site == 1:
-        # process = CrawlerProcess()
-        # process.crawl(OLXSpider, start_urls = OLX.PRODUCT_URLS.value)
-        # process.start()
+        process = CrawlerProcess()
+        process.crawl(OLXSpider, start_urls = OLX.PRODUCT_URLS.value)
+        process.start()
 
         print(f'Finished scraping OLX!\n')
 

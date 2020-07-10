@@ -3,7 +3,7 @@ This module contains all the scrapy spiders for the scraper module
 """
 import time
 import scrapy
-from .constants import SITE_IDS
+from .constants import SITE_IDS, BRAND_IDS
 from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -58,7 +58,7 @@ class OLXSpider(scrapy.Spider):
         image = response.urljoin(response.xpath(image_xp).get())
 
         yield {
-            'id_type_product': None,
+            'id_type_product': response.meta['brand'],
             'id_ecommerce': SITE_IDS['OLX'],
             'name': name,
             'description': description,
@@ -100,8 +100,14 @@ class OLXSpider(scrapy.Spider):
 
         self.driver.close()
 
+        brand = BRAND_IDS['playstation'] if 'playstation' in response.url \
+                else BRAND_IDS['nintendo'] if 'nintendo' in response.url \
+                    else BRAND_IDS['xbox'] if 'xbox' in response.url \
+                        else None
+
         for url in product_urls:
-           yield response.follow(url, callback = self.parse_product)
+           yield response.follow(url, callback = self.parse_product,
+                                 meta = { 'brand': brand })
 
 
 class ColombiaGamerSpider(scrapy.Spider):

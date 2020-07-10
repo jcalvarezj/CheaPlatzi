@@ -15,6 +15,11 @@ SITE_IDS = {
     'ColombiaGamer': 2,
     'OLX': 3
 }
+BRAND_IDS = {
+    'nintendo': 1,
+    'xbox': 2,
+    'playstation': 3
+}
 BACKEND_URL = 'https://cheaplatzi.uc.r.appspot.com/api/product'
 
 
