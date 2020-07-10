@@ -1,9 +1,17 @@
 """
 This module contains all the scrapy spiders for the scraper module
 """
+import time
 import scrapy
 from .constants import SITE_IDS
 from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import StaleElementReferenceException
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 class OLXSpider(scrapy.Spider):
@@ -65,11 +73,35 @@ class OLXSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
-        product_xp = f'//li[@data-aut-id="{OLX.ITEM_CLASS.value}"]//a/@href'
-        product_urls = response.xpath(product_xp).getall()
+        self.driver = webdriver.Chrome(ChromeDriverManager().install())
+        self.driver.get(response.url)
+
+        button_xp = f'//button[@data-aut-id="{OLX.BTN_CLASS.value}"]'
+
+        try:
+            WebDriverWait(self.driver, OLX.DRIVER_TIMEOUT.value).until(
+                EC.presence_of_element_located((By.XPATH, button_xp))
+            )
+        except TimeoutError:
+            self.log('The page took too long to load. Reached timeout.')
+        
+        button = self.driver.find_element_by_xpath(button_xp)
+
+        while button:
+            try:
+                button.click()
+                time.sleep(OLX.DELAY_IN_SECS.value)
+            except StaleElementReferenceException:
+                button = None
+
+        product_xp = f'//li[@data-aut-id="{OLX.ITEM_CLASS.value}"]/a[@href]'
+        a_tags = self.driver.find_elements_by_xpath(product_xp)
+        product_urls = [a.get_attribute('href') for a in a_tags]
+
+        self.driver.close()
 
         for url in product_urls:
-            yield response.follow(url, callback = self.parse_product)
+           yield response.follow(url, callback = self.parse_product)
 
 
 class ColombiaGamerSpider(scrapy.Spider):
