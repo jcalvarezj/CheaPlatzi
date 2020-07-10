@@ -10,9 +10,15 @@ from enum import Enum
 HEADERS = {
     'Content-Type': 'application/json'
 }
+SITE_IDS = {
+    'MercadoLibre': 1,
+    'ColombiaGamer': 2,
+    'OLX': 3
+}
+BACKEND_URL = 'https://cheaplatzi.uc.r.appspot.com/api/product'
 
 
-def _get_test_products(path, html_desc = False):
+def _get_test_products(path, site_id, html_desc = False, short_desc = False):
     """
     Creates a list of test products with the specified test path. The html_desc
     parameter indicates whether the expected description is plain text or HTML
@@ -25,30 +31,39 @@ def _get_test_products(path, html_desc = False):
     ]
     return [
         {
+            'id_ecommerce': site_id,
+            'id_type_product': None,
             'name': 'Nintendo Switch',
             'description': EXPECTED_DESCS[0] if not html_desc
-                           else f'<p>{EXPECTED_DESCS[0]}</p>',
-            'price': '$ 1.000.000',
+                           else f'<p>{EXPECTED_DESCS[0]}</p>' if not short_desc
+                               else f'<p>Short</p>\n<p>{EXPECTED_DESCS[0]}</p>',
+            'price': 1000000,
             'image': urllib.parse.quote(f'{PROTOCOL}{path}/switch.jpg',
                                         safe = '/:'),
             'url': urllib.parse.quote(f'{PROTOCOL}{path}/switch_mock.html',
                                       safe = '/:')
         },
         {
+            'id_ecommerce': site_id,
+            'id_type_product': None,
             'name': 'PlayStation 4',
             'description': EXPECTED_DESCS[1] if not html_desc
-                           else f'<p>{EXPECTED_DESCS[1]}</p>',
-            'price': '$ 1.350.000',
+                           else f'<p>{EXPECTED_DESCS[1]}</p>' if not short_desc
+                               else f'<p>Short</p>\n<p>{EXPECTED_DESCS[1]}</p>',
+            'price': 1350000,
             'image': urllib.parse.quote(f'{PROTOCOL}{path}/play.jpg',
                                         safe = '/:'),
             'url': urllib.parse.quote(f'{PROTOCOL}{path}/playstation_mock.html',
                                       safe = '/:')
         },
         {
+            'id_ecommerce': site_id,
+            'id_type_product': None,
             'name': 'Xbox One S',
             'description': EXPECTED_DESCS[2] if not html_desc
-                           else f'<p>{EXPECTED_DESCS[2]}</p>',
-            'price': '$ 1.550.000',
+                           else f'<p>{EXPECTED_DESCS[2]}</p>' if not short_desc
+                               else f'<p>Short</p>\n<p>{EXPECTED_DESCS[2]}</p>',
+            'price': 1550000,
             'image': urllib.parse.quote(f'{PROTOCOL}{path}/xbox.jpg',
                                         safe = '/:'),
             'url': urllib.parse.quote(f'{PROTOCOL}{path}/xbox_mock.html',
@@ -72,7 +87,7 @@ class MercadoLibreConfig(Enum):
     EXPORT_FILE_PATH = 'export/ml_items.json'
     DELAY_IN_SECS = 1
     MAX_OFFSET = 1000
-    LIMIT = 50
+    LIMIT = 20
 
 
 class OLXConfig(Enum):
@@ -88,7 +103,7 @@ class OLXConfig(Enum):
     IMG_DIV_CLASS = 'slick-active'
     TEST_PATH = f'{os.getcwd()}/scraper/test/olx_mocks'
     TEST_FILE = 'olx_mock.html'
-    TEST_PRODUCTS = _get_test_products(TEST_PATH)
+    TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['OLX'])
 
 
 class ColombiaGamerConfig(Enum):
@@ -106,10 +121,12 @@ class ColombiaGamerConfig(Enum):
     IMG_CLASS = 'main-image'
     TITLE_CLASS = 'vm-product-title'
     PRICE_CLASS = 'PricesalesPrice'
+    SHORT_DESC_CLASS = 'product-short-description'
     DESC_CLASS = 'product-description'
     TEST_PATH = f'{os.getcwd()}/scraper/test/cgamer_mocks'
     TEST_FILES = ['cgamer_switch_mock.html', 'cgamer_playstation_mock.html',
                   'cgamer_xbox_mock.html']
+<<<<<<< HEAD
     TEST_PRODUCTS = _get_test_products(TEST_PATH, True)
 
     
@@ -180,3 +197,7 @@ class SearsConfig(Enum):
     TEST_FILES = ['sears_mock.html']
     TEST_PRODUCTS = _get_test_products(TEST_PATH)
 
+=======
+    TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['ColombiaGamer'],
+                                       True, True)
+>>>>>>> 91d3d0781653bcc0544c02fd87932d1fc8909080
