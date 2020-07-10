@@ -2,6 +2,7 @@
 This module contains all the scrapy spiders for the scraper module
 """
 import scrapy
+from .constants import SITE_IDS
 from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
 
 
@@ -15,7 +16,8 @@ class OLXSpider(scrapy.Spider):
             OLX.EXPORT_FILE_PATH.value: {
                 'format': 'json',
                 'encoding': 'utf-8',
-                'fields': ['name', 'description', 'price', 'image', 'url'],
+                'fields': ['id_type_product', 'id_ecommerce', 'name',
+                           'description', 'price', 'image', 'url'],
                 'indent': 4
             }
         },
@@ -40,13 +42,16 @@ class OLXSpider(scrapy.Spider):
 
         price_xp = (f'//section[@class="{OLX.RIGHT_SECT_CLASS.value}"]//span/'
                     'text()')
-        price = response.xpath(price_xp).get()
+        price = int(response.xpath(price_xp).get().replace('$ ','') \
+                    .replace('.', ''))
 
         image_xp = (f'//div[contains(@class, "{OLX.IMG_DIV_CLASS.value}")]//'
                     'img/@src')
         image = response.urljoin(response.xpath(image_xp).get())
 
         yield {
+            'id_type_product': None,
+            'id_ecommerce': SITE_IDS['OLX'],
             'name': name,
             'description': description,
             'price': price,
@@ -77,7 +82,8 @@ class ColombiaGamerSpider(scrapy.Spider):
             CGamer.EXPORT_FILE_PATH.value: {
                 'format': 'json',
                 'encoding': 'utf-8',
-                'fields': ['name', 'description', 'price', 'image', 'url'],
+                'fields': ['id_type_product', 'id_ecommerce', 'name',
+                           'description', 'price', 'image', 'url'],
                 'indent': 4
             }
         },
@@ -96,17 +102,25 @@ class ColombiaGamerSpider(scrapy.Spider):
         name_xp = f'//div[@class="{CGamer.TITLE_CLASS.value}"]//h2/text()'
         name = response.xpath(name_xp).get()
 
+        short_desc_xp = f'//div[@class="{CGamer.SHORT_DESC_CLASS.value}"]/*'
+        short_desc_elements = response.xpath(short_desc_xp).extract()
+        short_description = ''.join(short_desc_elements)
+
         desc_xp = f'//div[@class="{CGamer.DESC_CLASS.value}"]/*'
         description_elements = response.xpath(desc_xp).extract()
-        description = ''.join(description_elements)
+        big_description = ''.join(description_elements)
+        description = f'{short_description}\n{big_description}'
 
         price_xp = f'//span[@class="{CGamer.PRICE_CLASS.value}"]/text()'
-        price = response.xpath(price_xp).get()
+        price = int(response.xpath(price_xp).get().replace('$ ','') \
+                    .replace('.', ''))
 
         image_xp = (f'//div[@class="{CGamer.IMG_CLASS.value}"]//img/@src')
         image = response.urljoin(response.xpath(image_xp).get())
 
         yield {
+            'id_type_product': None,
+            'id_ecommerce': SITE_IDS['ColombiaGamer'],
             'name': name,
             'description': description,
             'price': price,
