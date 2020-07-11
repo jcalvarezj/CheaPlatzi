@@ -69,7 +69,7 @@ class OLXSpider(scrapy.Spider):
 
         image_xp = (f'//div[contains(@class, "{OLX.IMG_DIV_CLASS.value}")]//'
                     'img/@src')
-        image = response.xpath(image_xp).get()
+        image = response.urljoin(response.xpath(image_xp).get())
 
         yield {
             'id_type_product': response.meta['brand'],
