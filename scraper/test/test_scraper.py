@@ -116,7 +116,7 @@ def test_cgamer_scrapper_happy_path_json_data_exported():
 def test_gamepl_scrapper_happy_path_json_data_exported():
     """
     This test case checks if the scraper generates the right json file after
-    scraping a mock with CGamer's site structure
+    scraping a mock with GamePlanet's site structure
     """
     file_path = f'{GamePl.EXPORT_FILE_PATH.value}'
     cleanup(file_path)

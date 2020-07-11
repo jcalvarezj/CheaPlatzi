@@ -168,7 +168,8 @@ class GamePlSpider(scrapy.Spider):
             GamePl.EXPORT_FILE_PATH.value: {
                 'format': 'json',
                 'encoding': 'utf-8',
-                'fields': ['name', 'description', 'price', 'image', 'url', 'id_ecommerce', 'categoria'],
+                'fields': ['id_type_product', 'id_ecommerce', 'name',
+                           'description', 'price', 'image', 'url'],
                 'indent': 4
             }
         },
@@ -179,8 +180,8 @@ class GamePlSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
-        self.driver = webdriver.Chrome(ChromeDriverManager().install())
-        # chrome_options=chrome_options)
+        self.driver = webdriver.Chrome(ChromeDriverManager().install(),
+        chrome_options=chrome_options)
 
 
     def parse_product(self, response):
@@ -209,12 +210,18 @@ class GamePlSpider(scrapy.Spider):
 
         tag_xp = (f'//span[@class = "{GamePl.TAG_CLASS.value}"]')
         tag_product = self.driver.find_elements_by_xpath(tag_xp)[0].get_attribute('innerText')
+        if "switch" in tag_product.lower():
+            id_type_product = 1
+        if "xbox" in tag_product.lower():
+            id_type_product = 2
+        if "playstation" in tag_product.lower():
+            id_type_product = 3
 
         yield{
             'name': name,
             'description': description,
-            'id_ecommerce': 4,
-            'categoria': tag_product,
+            'id_ecommerce': SITE_IDS['GamePlanet'],
+            'id_type_product': id_type_product,
             'price': price,
             'image': image,
             'url': response.url
@@ -239,71 +246,9 @@ class GamePlSpider(scrapy.Spider):
         for url in product_urls:
             yield response.follow(url.get_attribute('href'), callback = self.parse_product)
 
-class MixUpSpider(scrapy.Spider):
-    """
-    This spider scraps products from the ColombiaGamer e-commerce site
-    """
-    name = MU.SPIDER_NAME.value
-    custom_settings = {
-        'FEEDS': {
-            MU.EXPORT_FILE_PATH.value: {
-                'format': 'json',
-                'encoding': 'utf-8',
-                'fields': ['name', 'description', 'price', 'image', 'url'],
-                'indent': 4
-            }
-        },
-        'FEED_EXPORT_ENCODING': 'utf-8',
-        'AUTOTHROTTLE_ENABLED': True
-    }
-
-
-    def parse_product(self, response):
-        """
-        Retrieves product information from the product detail page, and exports
-        it to the output json
-        """
-        self.log(f'\n>>>>> ATTEMPTING TO SCRAP {response.url}<<<<<\n')
-
-        name_xp = f'//div[@class="{MU.TITLE_CLASS.value}"]/text()'
-        name = response.xpath(name_xp).get()
-
-        desc_xp = f'//div[@class="{MU.DESC_CLASS.value}"]//div[@class = "texto"]/text()'
-        description = response.xpath(desc_xp).get()
-        description = description.strip()
-
-        price_xp = f'//span[contains(@class, "{MU.PRICE_CLASS.value}")]/text()'
-        price = response.xpath(price_xp)[1].get()
-        price = price.strip()          
-
-        image_xp = (f'//img[@id="{MU.IMAGE_ID.value}"]/@src')
-        image = response.urljoin(response.xpath(image_xp).get())
-
-        yield {
-            'name': name,
-            'description': description,
-            'price': price,
-            'image': image,
-            'url': response.url
-        }
-
-
-    def parse(self, response):
-        """
-        Retrieves information for all products in terms of the fields: name,
-        description, price, image, and url
-        """
-
-        
-        product_xp = (f'//div[@class = "{MU.ITEM_CLASS_1.value}"]/div[@class = "{MU.ITEM_CLASS_2.value}"]/a/@href')
-        product_urls = response.xpath(product_xp).getall()
-
-        for url in product_urls:
-            yield response.follow(url, callback = self.parse_product)
-
 class SearSpider(scrapy.Spider):
     """
-    This spider scraps products from the ColombiaGamer e-commerce site
+    This spider scraps products from the Sears e-commerce site
     """
     name = SEA.SPIDER_NAME.value
     custom_settings = {
@@ -311,7 +256,8 @@ class SearSpider(scrapy.Spider):
             SEA.EXPORT_FILE_PATH.value: {
                 'format': 'json',
                 'encoding': 'utf-8',
-                'fields': ['name', 'description', 'price', 'image', 'url'],
+                'fields': ['id_type_product', 'id_ecommerce', 'name',
+                           'description', 'price', 'image', 'url'],
                 'indent': 4
             }
         },
@@ -335,13 +281,26 @@ class SearSpider(scrapy.Spider):
 
         price_xp = f'//p[@class = "{SEA.PRICE_CLASS.value}"]/text()'
         price = response.xpath(price_xp).get()
+        price = int(float(price.replace("$","").replace(",","")))
 
         image_xp = (f'//ul[contains(@class,{SEA.IMAGE_CLASS.value})]/li/img/@src')
         image = response.urljoin(response.xpath(image_xp)[0].get())
 
+        tag_xp = (f'//div[@class = "breadcrumb"]/ul/li[3]/a/text()')
+        tag_product = response.xpath(tag_xp).get()
+
+        if "nintendo" in tag_product.lower():
+            id_type_product = 1
+        if "xbox" in tag_product.lower():
+            id_type_product = 2
+        if "playstation" in tag_product.lower():
+            id_type_product = 3
+
         yield {
             'name': name,
             'description': description,
+            'id_ecommerce': SITE_IDS['Sears'],
+            'id_type_product': id_type_product,
             'price': price,
             'image': image,
             'url': response.url
@@ -366,5 +325,111 @@ class SearSpider(scrapy.Spider):
         product_xp = (f'//div[@class = "{SEA.ITEM_CLASS.value}"]/a[@class = "{SEA.LINK_CLASS.value}"]/@href')
         product_urls = response.xpath(product_xp).getall()
 
+        for url in product_urls:
+            yield response.follow(url, callback = self.parse_product)
+
+class MixUpSpider(scrapy.Spider):
+    """
+    This spider scraps products from the MixUp e-commerce site
+    """
+    name = MU.SPIDER_NAME.value
+    custom_settings = {
+        'FEEDS': {
+            MU.EXPORT_FILE_PATH.value: {
+                'format': 'json',
+                'encoding': 'utf-8',
+                'fields': ['id_type_product', 'id_ecommerce', 'name',
+                           'description', 'price', 'image', 'url'],
+                'indent': 4
+            }
+        },
+        'FEED_EXPORT_ENCODING': 'utf-8',
+        'AUTOTHROTTLE_ENABLED': True
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        chrome_options = Options()  
+        chrome_options.add_argument("--headless")
+        self.driver = webdriver.Chrome(ChromeDriverManager().install())
+        # chrome_options=chrome_options)
+
+    def parse_product(self, response):
+        """
+        Retrieves product information from the product detail page, and exports
+        it to the output json
+        """
+        self.log(f'\n>>>>> ATTEMPTING TO SCRAP {response.url}<<<<<\n')
+
+        name_xp = f'//div[@class="{MU.TITLE_CLASS.value}"]/text()'
+        name = response.xpath(name_xp).get().strip()
+
+        desc_xp = f'//div[@class="{MU.DESC_CLASS.value}"]//div[@class = "texto"]/text()'
+        description = response.xpath(desc_xp).get()
+        description = description.strip()
+
+        price_xp = f'//span[contains(@class, "{MU.PRICE_CLASS.value}")]/text()'
+        price = response.xpath(price_xp)[1].get()
+        price = price.strip()         
+        price = int(float(price.replace("$","").replace(",",""))) 
+
+        image_xp = (f'//img[@id="{MU.IMAGE_ID.value}"]/@src')
+        image = response.urljoin(response.xpath(image_xp).get())
+
+        tag_xp = (f'//div[@id = "ctl00_container_PanelAutor"]/div[@class = "titulo"]/text()')
+        tag_product = response.xpath(tag_xp).getall()
+        tag_product = ''.join(tag_product)
+        tag_product = tag_product.strip()
+
+        if "switch" in tag_product.lower():
+            id_type_product = 1
+        if "xbox" in tag_product.lower():
+            id_type_product = 2
+        if "playstation" in tag_product.lower():
+            id_type_product = 3
+        
+
+        yield {
+            'name': name,
+            'description': description,
+            'id_type_product': id_type_product,
+            'id_ecommerce': SITE_IDS['MixUp'],
+            'price': price,
+            'image': image,
+            'url': response.url
+        }
+
+
+    def parse(self, response):
+        """
+        Retrieves information for all products in terms of the fields: name,
+        description, price, image, and url
+        """
+        
+        self.driver.get(response.url)
+        
+        product_urls = []
+        product_xp = (f'//div[@class = "{MU.ITEM_CLASS_1.value}"]/div[@class = "{MU.ITEM_CLASS_2.value}"]/a')
+        products = self.driver.find_elements_by_xpath(product_xp)
+        for product in products:
+            product_urls.append(product.get_attribute('href'))
+
+        next_button = self.driver.find_elements_by_xpath('//a[@id = "ctl00_container_linkPnts2Up"]')
+        next_button = next_button[0]
+        next_button.click()
+        condition = True
+        while (condition):
+            self.log(f'condition: {condition}')
+            self.driver.implicitly_wait(2)
+            new_products = self.driver.find_elements_by_xpath(product_xp)
+            for product in new_products:
+                new_url = product.get_attribute('href')
+                product_urls.append(new_url)
+            next_button = self.driver.find_elements_by_xpath('//a[@id = "ctl00_container_linkPnts2Up"]')
+            next_button = next_button[0]
+            disabled = next_button.get_attribute('disabled')
+            condition = disabled != 'true'
+            next_button.click()
+            
         for url in product_urls:
             yield response.follow(url, callback = self.parse_product)

@@ -13,7 +13,10 @@ HEADERS = {
 SITE_IDS = {
     'MercadoLibre': 1,
     'ColombiaGamer': 2,
-    'OLX': 3
+    'OLX': 3,
+    'GamePlanet': 4,
+    'Sears': 5,
+    'MixUp': 6
 }
 BACKEND_URL = 'https://cheaplatzi.uc.r.appspot.com/api/product'
 
@@ -126,8 +129,8 @@ class ColombiaGamerConfig(Enum):
     TEST_PATH = f'{os.getcwd()}/scraper/test/cgamer_mocks'
     TEST_FILES = ['cgamer_switch_mock.html', 'cgamer_playstation_mock.html',
                   'cgamer_xbox_mock.html']
-<<<<<<< HEAD
-    TEST_PRODUCTS = _get_test_products(TEST_PATH, True)
+    TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['ColombiaGamer'],
+                                       True, True)
 
     
 class GamePlanetConfig(Enum):
@@ -152,11 +155,11 @@ class GamePlanetConfig(Enum):
     TAG_CLASS = 'plataforma-text'
     TEST_PATH = f'{os.getcwd()}/scraper/test/gameplanet_mocks'
     TEST_FILES = ['gameplanet_mock.html']
-    TEST_PRODUCTS = _get_test_products(TEST_PATH)
+    TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['GamePlanet'])
 
 class MixUpConfig(Enum):
     """
-    This enum provides configuration constants for GamePlanet scraping
+    This enum provides configuration constants for MixUp scraping
     """
     PRODUCT_URLS = [
         'https://www.mixup.com.mx/mixup/Productos.aspx?etq=GAMNIN&etqP=GAM&bf=',
@@ -174,16 +177,16 @@ class MixUpConfig(Enum):
     IMAGE_ID = 'imgProd'
     TEST_PATH = f'{os.getcwd()}/scraper/test/mixup_mocks'
     TEST_FILES = ['mixup_mock.html']
-    TEST_PRODUCTS = _get_test_products(TEST_PATH)
+    TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['MixUp'])
 
 class SearsConfig(Enum):
     """
-    This enum provides configuration constants for GamePlanet scraping
+    This enum provides configuration constants for Sears scraping
     """
     PRODUCT_URLS = [
         'https://www.sears.com.mx/categoria/16659/xbox/',
-        'https://www.sears.com.mx/categoria/16667/playstation/',
-        'https://www.sears.com.mx/categoria/16663/nintendo/',
+        # 'https://www.sears.com.mx/categoria/16667/playstation/',
+        # 'https://www.sears.com.mx/categoria/16663/nintendo/',
     ]
     SPIDER_NAME = 'searspider'
     EXPORT_FILE_PATH = 'export/sears_items.json'
@@ -195,9 +198,5 @@ class SearsConfig(Enum):
     IMAGE_CLASS = 'carrusel-producto'
     TEST_PATH = f'{os.getcwd()}/scraper/test/sears_mocks'
     TEST_FILES = ['sears_mock.html']
-    TEST_PRODUCTS = _get_test_products(TEST_PATH)
+    TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['Sears'])
 
-=======
-    TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['ColombiaGamer'],
-                                       True, True)
->>>>>>> 91d3d0781653bcc0544c02fd87932d1fc8909080

@@ -145,7 +145,10 @@ def run(site, verbose, store):
 
     0: MercadoLibre\n
     1: OLX\n
-    2: ColombiaGamer
+    2: ColombiaGamer\n
+    3: GamePlanet\n
+    4: Sears\n
+    5: MixUp\n
 
     Windows Use: 
     
@@ -195,27 +198,26 @@ def run(site, verbose, store):
         process = CrawlerProcess()
         process.crawl(CGamerSpider, start_urls = CGamer.PRODUCT_URLS.value)
         process.start()
-<<<<<<< HEAD
+        print(f'Finished scraping ColombiaGamer!\n')
     elif site == 3:
         process = CrawlerProcess()
         process.crawl(GamePlSpider, start_urls = GamePl.PRODUCT_URLS.value)
         process.start()
+        print(f'Finished scraping GamePlanet!\n')
     elif site == 4:
         process = CrawlerProcess()
         process.crawl(SearSpider, start_urls = SEAConfig.PRODUCT_URLS.value)
         process.start()
+        print(f'Finished scraping Sears!\n')
     elif site == 5:
         process = CrawlerProcess()
         process.crawl(MixUpSpider, start_urls = MUConfig.PRODUCT_URLS.value)
         process.start()
-=======
-
-        print(f'Finished scraping ColombiaGamer!\n')
+        print(f'Finished scraping MixUp!\n')
 
         if store:
             _store_in_remote_database(CGamer.EXPORT_FILE_PATH.value,
                                       verbose = verbose)
->>>>>>> 91d3d0781653bcc0544c02fd87932d1fc8909080
     else:
         print('Invalid option for site')
 
