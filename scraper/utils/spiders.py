@@ -34,6 +34,17 @@ class OLXSpider(scrapy.Spider):
         'AUTOTHROTTLE_ENABLED': True
     }
 
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(OLXSpider, cls).from_crawler(crawler, *args, **kwargs)
+        crawler.signals.connect(spider.spider_closed,
+                                signal = scrapy.signals.spider_closed)
+        return spider
+
+
+    def spider_closed(self, spider):
+        spider.driver.quit()
+
 
     def parse_product(self, response):
         """
