@@ -15,6 +15,11 @@ SITE_IDS = {
     'ColombiaGamer': 2,
     'OLX': 3
 }
+BRAND_IDS = {
+    'nintendo': 1,
+    'xbox': 2,
+    'playstation': 3
+}
 BACKEND_URL = 'https://cheaplatzi.uc.r.appspot.com/api/product'
 
 
@@ -32,7 +37,7 @@ def _get_test_products(path, site_id, html_desc = False, short_desc = False):
     return [
         {
             'id_ecommerce': site_id,
-            'id_type_product': None,
+            'id_type_product': BRAND_IDS['nintendo'],
             'name': 'Nintendo Switch',
             'description': EXPECTED_DESCS[0] if not html_desc
                            else f'<p>{EXPECTED_DESCS[0]}</p>' if not short_desc
@@ -45,7 +50,7 @@ def _get_test_products(path, site_id, html_desc = False, short_desc = False):
         },
         {
             'id_ecommerce': site_id,
-            'id_type_product': None,
+            'id_type_product': BRAND_IDS['playstation'],
             'name': 'PlayStation 4',
             'description': EXPECTED_DESCS[1] if not html_desc
                            else f'<p>{EXPECTED_DESCS[1]}</p>' if not short_desc
@@ -58,7 +63,7 @@ def _get_test_products(path, site_id, html_desc = False, short_desc = False):
         },
         {
             'id_ecommerce': site_id,
-            'id_type_product': None,
+            'id_type_product': BRAND_IDS['xbox'],
             'name': 'Xbox One S',
             'description': EXPECTED_DESCS[2] if not html_desc
                            else f'<p>{EXPECTED_DESCS[2]}</p>' if not short_desc
@@ -81,10 +86,11 @@ class MercadoLibreConfig(Enum):
     CATEGORY_ID = 'MCO1144'
     PRODUCT_ID_PARAM = '$PRODUCT_ID'
     BASE_SITE_URL = f'{BASE_URL}/sites/{COUNTRY_ID}'
+    SEARCH_URL = f'{BASE_SITE_URL}/search'
     PRODUCT_URLS = [
-        f'{BASE_SITE_URL}/search?q=xbox%20one',
-        f'{BASE_SITE_URL}/search?q=ps4',
-        f'{BASE_SITE_URL}/search?q=nintendo%20switch'
+        f'{SEARCH_URL}?q=xbox%20one',
+        f'{SEARCH_URL}?q=ps4',
+        f'{SEARCH_URL}?q=nintendo%20switch'
     ]
     DETAIL_URL = f'{BASE_URL}/items/{PRODUCT_ID_PARAM}'
     DESC_URL = f'{DETAIL_URL}/description'
@@ -103,9 +109,12 @@ class MercadoLibreConfig(Enum):
         DETAIL_URL.replace(f'{PRODUCT_ID_PARAM}', TEST_PS4_ID),
         DETAIL_URL.replace(f'{PRODUCT_ID_PARAM}', TEST_SWITCH_ID)
     ]
-    TEST_PATH = f'{os.getcwd()}/scraper/test/mercadolibre_mocks'
+    TEST_PATH_RELATIVE = 'scraper/test/mercadolibre_mocks'
+    TEST_PATH = f'{os.getcwd()}/{TEST_PATH_RELATIVE}'
     TEST_INDEX_FILES = ['xbox_index_base.json', 'playstation_index_base.json',
                         'switch_index_base.json']
+    TEST_INDEX_FILES_PARSED = ['xbox_index.json', 'playstation_index.json',
+                               'switch_index.json']
     TEST_DESCRIPTION_FILES = [
         'xbox_description.json',
         'playstation_description.json',
@@ -115,6 +124,11 @@ class MercadoLibreConfig(Enum):
         'xbox_product_base.json',
         'playstation_product_base.json',
         'switch_product_base.json'
+    ]
+    TEST_PRODUCT_FILES_PARSED = [
+        'xbox_product.json',
+        'playstation_product.json',
+        'switch_product.json'
     ]
     TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['MercadoLibre'])
     EXPORT_FILE_PATH = 'export/ml_items.json'

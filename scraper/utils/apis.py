@@ -1,9 +1,10 @@
 """
 This module contains the definiton of functions for API consuming
 """
+import time
 import grequests
 from .constants import HEADERS
-from utils.constants import MercadoLibreConfig as MLC
+from .constants import MercadoLibreConfig as MLC
 
 
 def _handle_exception(request, exception):
@@ -91,7 +92,7 @@ def store_request(page_list, endpoint, verbose):
     responses = grequests.map(pending_requests, 
                               exception_handler = _handle_exception)
     
-    for i, response in enumerate(responses):        
+    for i, response in enumerate(responses):
         if response != None:
             _print_response_success(response, i, 201, verbose)
 
@@ -103,7 +104,12 @@ def _get_all_mercadolibre_urls(product_index_url, limit):
     """
     urls = []
 
-    for coef in range(0, MLC.MAX_OFFSET.value // limit + 1):
+    N = 1
+
+    if limit:
+        N = MLC.MAX_OFFSET.value // limit + 1
+
+    for coef in range(0, N):
         params = f'&offset={coef * limit}&limit={limit}'
         urls.append(f'{product_index_url}{params}')
 
@@ -117,51 +123,53 @@ def _scrap_mercadolibre_product_pages(product_responses, verbose):
     records = []
         
     for i, product_response in enumerate(product_responses):
-        products = product_response.json()['results']
+        if product_response:
+            products = product_response.json()['results']
 
-        for product in products:
-            params = { MLC.PRODUCT_ID_PARAM.value: product['id'] }
+            for product in products:
+                params = { MLC.PRODUCT_ID_PARAM.value: product['id'] }
 
-            description_responses = scrap_request([MLC.DESC_URL.value],
-                                                       params, verbose)
+                description_responses = scrap_request([MLC.DESC_URL.value],
+                                                        params, verbose)
 
-            time.sleep(MLC.DELAY_IN_SECS.value)
+                time.sleep(MLC.DELAY_IN_SECS.value)
 
-            img_responses = scrap_request([MLC.DETAIL_URL.value], params,
-                                               verbose)
+                img_responses = scrap_request([MLC.DETAIL_URL.value], params,
+                                                verbose)
 
-            time.sleep(MLC.DELAY_IN_SECS.value)
+                time.sleep(MLC.DELAY_IN_SECS.value)
 
-            description = ""
-            if description_responses:
-                try:
-                    description = description_responses[0].json()['plain_text']
-                except Exception:
-                    description = "{PROBLEM OBTAINING THIS ITEM'S DESCRIPTION}"
+                description = ""
+                if description_responses:
+                    try:
+                        description = description_responses[0].json()['plain_text']
+                    except Exception:
+                        description = "{PROBLEM OBTAINING THIS ITEM'S DESCRIPTION}"
 
-            image = ""
-            if img_responses:
-                try:
-                    image = img_responses[0].json()['pictures'][0]['secure_url']
-                except Exception:
-                    image = "{PROBLEM OBTAINING THIS ITEM'S IMAGE URL}"
+                image = ""
+                if img_responses:
+                    try:
+                        image = img_responses[0].json()['pictures'][0]['secure_url']
+                    except Exception:
+                        image = "{PROBLEM OBTAINING THIS ITEM'S IMAGE URL}"
 
-            records.append({
-                'id_type_product': None,
-                'id_ecommerce': SITE_IDS['MercadoLibre'],
-                'name': product['title'],
-                'description': description,
-                'price': product['price'],
-                'image': image,
-                'url': product['permalink']
-            })
+                records.append({
+                    'id_type_product': None,
+                    'id_ecommerce': SITE_IDS['MercadoLibre'],
+                    'name': product['title'],
+                    'description': description,
+                    'price': product['price'],
+                    'image': image,
+                    'url': product['permalink']
+                })
 
-            time.sleep(MLC.DELAY_IN_SECS.value)
-
+                time.sleep(MLC.DELAY_IN_SECS.value)
+        else:
+            print('No response obtained')
     return records
 
 
-def scrap_mercadolibre(limit = MLC.LIMIT.value):
+def scrap_mercadolibre(limit = MLC.LIMIT.value, verbose = False):
     """
     Consumes MercadoLibre's API to perform scraping of products
     The limit value establishes the maximum offset for pagination
@@ -188,4 +196,4 @@ def scrap_mercadolibre(limit = MLC.LIMIT.value):
         with open(file_name, 'w', encoding = 'utf-8') as export_file:
             json.dump(records, export_file, ensure_ascii = False)
         
-        print(f'Scraped page {i+1} of {N}')
+        print(f'Scraped page {i + 1} of {N}')
