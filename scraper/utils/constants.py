@@ -199,8 +199,8 @@ class SearsConfig(Enum):
     """
     PRODUCT_URLS = [
         'https://www.sears.com.mx/categoria/16659/xbox/',
-        # 'https://www.sears.com.mx/categoria/16667/playstation/',
-        # 'https://www.sears.com.mx/categoria/16663/nintendo/',
+        'https://www.sears.com.mx/categoria/16667/playstation/',
+        'https://www.sears.com.mx/categoria/16663/nintendo/',
     ]
     SPIDER_NAME = 'searspider'
     EXPORT_FILE_PATH = 'export/sears_items.json'

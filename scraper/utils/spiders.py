@@ -221,13 +221,23 @@ class GamePlSpider(scrapy.Spider):
         "FEED_EXPORT_ENCODING": "utf-8",
         'AUTOTHROTTLE_ENABLED': True
     }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
-        self.driver = webdriver.Chrome(ChromeDriverManager().install(),
-        chrome_options=chrome_options)
+        self.driver = webdriver.Chrome(ChromeDriverManager().install())
+        # chrome_options=chrome_options)
 
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(GamePlSpider, cls).from_crawler(crawler, *args, **kwargs)
+        crawler.signals.connect(spider.spider_closed,
+                                signal = scrapy.signals.spider_closed)
+        return spider
+
+    def spider_closed(self, spider):
+        self.driver.quit()
 
     def parse_product(self, response):
         """
