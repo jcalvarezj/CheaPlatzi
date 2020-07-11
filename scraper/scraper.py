@@ -8,7 +8,7 @@ import json
 import click
 import utils.apis as apis
 from scrapy.crawler import CrawlerProcess
-from utils.constants import MercadoLibreConfig as MLC
+from utils.constants import MercadoLibreConfig as MLC, BACKEND_URL, SITE_IDS
 from utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider, GamePlSpider, MixUpSpider, SearSpider
 from utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer, GamePlanetConfig as GamePl, SearsConfig as SEAConfig, MixUpConfig as MUConfig
 
