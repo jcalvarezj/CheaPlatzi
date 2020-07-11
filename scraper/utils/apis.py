@@ -3,6 +3,7 @@ This module contains the definiton of functions for API consuming
 """
 import grequests
 from .constants import HEADERS
+from utils.constants import MercadoLibreConfig as MLC
 
 
 def _handle_exception(request, exception):
@@ -25,7 +26,11 @@ def _parse_endpoint(endpoint, params_dict):
     return parsed_endpoint
 
 
-def _print_response_success(response, index, expected_code, verbose):    
+def _print_response_success(response, index, expected_code, verbose):
+    """
+    Prints an output according to the response's status, and its json contents
+    if verbose mode is enabled
+    """
     request_url = response.request.url
 
     if response.status_code == expected_code:
@@ -89,3 +94,98 @@ def store_request(page_list, endpoint, verbose):
     for i, response in enumerate(responses):        
         if response != None:
             _print_response_success(response, i, 201, verbose)
+
+
+def _get_all_mercadolibre_urls(product_index_url, limit):
+    """
+    Generates a list of MercadoLibre product URLs for scraping (according to
+    item offsets within a specified limit)
+    """
+    urls = []
+
+    for coef in range(0, MLC.MAX_OFFSET.value // limit + 1):
+        params = f'&offset={coef * limit}&limit={limit}'
+        urls.append(f'{product_index_url}{params}')
+
+    return urls
+
+
+def _scrap_mercadolibre_product_pages(product_responses, verbose):
+    """
+    Scraps MercadoLibre's product pages from the passed responses
+    """
+    records = []
+        
+    for i, product_response in enumerate(product_responses):
+        products = product_response.json()['results']
+
+        for product in products:
+            params = { MLC.PRODUCT_ID_PARAM.value: product['id'] }
+
+            description_responses = scrap_request([MLC.DESC_URL.value],
+                                                       params, verbose)
+
+            time.sleep(MLC.DELAY_IN_SECS.value)
+
+            img_responses = scrap_request([MLC.DETAIL_URL.value], params,
+                                               verbose)
+
+            time.sleep(MLC.DELAY_IN_SECS.value)
+
+            description = ""
+            if description_responses:
+                try:
+                    description = description_responses[0].json()['plain_text']
+                except Exception:
+                    description = "{PROBLEM OBTAINING THIS ITEM'S DESCRIPTION}"
+
+            image = ""
+            if img_responses:
+                try:
+                    image = img_responses[0].json()['pictures'][0]['secure_url']
+                except Exception:
+                    image = "{PROBLEM OBTAINING THIS ITEM'S IMAGE URL}"
+
+            records.append({
+                'id_type_product': None,
+                'id_ecommerce': SITE_IDS['MercadoLibre'],
+                'name': product['title'],
+                'description': description,
+                'price': product['price'],
+                'image': image,
+                'url': product['permalink']
+            })
+
+            time.sleep(MLC.DELAY_IN_SECS.value)
+
+    return records
+
+
+def scrap_mercadolibre(limit = MLC.LIMIT.value):
+    """
+    Consumes MercadoLibre's API to perform scraping of products
+    The limit value establishes the maximum offset for pagination
+    """ 
+    pages_urls = []
+    
+    for product_url in MLC.PRODUCT_URLS.value:
+        pages_urls.extend(_get_all_mercadolibre_urls(product_url, limit))
+    
+    N = len(pages_urls)    
+
+    for i, url in enumerate(pages_urls):
+        product_responses = []
+        response = scrap_request([url], verbose = verbose)
+        product_responses.append(response[0])
+        time.sleep(MLC.DELAY_IN_SECS.value)
+
+        records = _scrap_mercadolibre_product_pages(product_responses,
+                                                    verbose)
+        index = f'{i}'.zfill(3)
+        file_name = MLC.EXPORT_FILE_PATH.value.replace('.json',
+                                                        f'{index}.json')
+
+        with open(file_name, 'w', encoding = 'utf-8') as export_file:
+            json.dump(records, export_file, ensure_ascii = False)
+        
+        print(f'Scraped page {i+1} of {N}')

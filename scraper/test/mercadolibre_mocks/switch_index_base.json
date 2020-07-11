@@ -1,0 +1,146 @@
+{
+    "site_id": "MCO",
+    "query": "nintendo switch",
+    "paging": {
+        "total": 25577,
+        "offset": 0,
+        "limit": 50,
+        "primary_results": 1000
+    },
+    "results": [
+        {
+            "id": "MCO12345",
+            "site_id": "MCO",
+            "title": "Nintendo Switch",
+            "seller": {
+                "id": 123,
+                "permalink": null,
+                "registration_date": null,
+                "car_dealer": false,
+                "real_estate_agency": false,
+                "tags": null
+            },
+            "price": 1200000,
+            "currency_id": "COP",
+            "available_quantity": 1,
+            "sold_quantity": 500,
+            "buying_mode": "buy_it_now",
+            "listing_type_id": "gold_special",
+            "stop_time": "2037-05-14T03:20:26.000Z",
+            "condition": "new",
+            "permalink": "$SWITCHLINK",
+            "thumbnail": "http://images.com/MCO12345-I.jpg",
+            "accepts_mercadopago": true,
+            "installments": {
+                "quantity": 36,
+                "amount": 53608.33,
+                "rate": 0,
+                "currency_id": "COP"
+            },
+            "address": {
+                "state_id": "CO-DC",
+                "state_name": "Bogotá D.C.",
+                "city_id": "TUNPQ0NIQTk2OTI1",
+                "city_name": "Chapinero"
+            },
+            "shipping": {
+                "free_shipping": true,
+                "mode": "me2",
+                "tags": [
+                    "self_service_in",
+                    "mandatory_free_shipping"
+                ],
+                "logistic_type": "drop_off",
+                "store_pick_up": false
+            },
+            "seller_address": {
+                "id": "",
+                "comment": "",
+                "address_line": "",
+                "zip_code": "",
+                "country": {
+                    "id": "CO",
+                    "name": "Colombia"
+                },
+                "state": {
+                    "id": "CO-DC",
+                    "name": "Bogotá D.C."
+                },
+                "city": {
+                    "id": "TUNPQ0NIQTk2OTI1",
+                    "name": "Chapinero"
+                },
+                "latitude": "",
+                "longitude": ""
+            },
+            "attributes": [
+                {
+                    "values": [
+                        {
+                            "source": 321123,
+                            "id": "1111",
+                            "name": "Nintendo",
+                            "struct": null
+                        }
+                    ],
+                    "attribute_group_name": "Otros",
+                    "source": 321123,
+                    "value_name": "Nintendo",
+                    "value_struct": null,
+                    "attribute_group_id": "OTHERS",
+                    "id": "BRAND",
+                    "name": "Marca",
+                    "value_id": "65"
+                },
+                {
+                    "source": 1,
+                    "id": "ITEM_CONDITION",
+                    "name": "Condición del ítem",
+                    "value_struct": null,
+                    "values": [
+                        {
+                            "name": "Nuevo",
+                            "struct": null,
+                            "source": 1,
+                            "id": "5"
+                        }
+                    ],
+                    "attribute_group_name": "Otros",
+                    "value_id": "5",
+                    "value_name": "Nuevo",
+                    "attribute_group_id": "OTHERS"
+                },
+                {
+                    "id": "MODEL",
+                    "name": "Modelo",
+                    "value_id": "9",
+                    "value_name": "Switch",
+                    "value_struct": null,
+                    "values": [
+                        {
+                            "id": "9",
+                            "name": "Switch",
+                            "struct": null,
+                            "source": 888
+                        }
+                    ],
+                    "attribute_group_id": "OTHERS",
+                    "attribute_group_name": "Otros",
+                    "source": 888
+                }
+            ],
+            "original_price": null,
+            "category_id": "MCO1",
+            "official_store_id": null,
+            "domain_id": "MCO-GAME_CONSOLES",
+            "catalog_product_id": null,
+            "tags": [
+                "good_quality_picture",
+                "good_quality_thumbnail",
+                "immediate_payment",
+                "cart_eligible",
+                "best_seller_candidate"
+            ]
+        }
+    ]
+}
