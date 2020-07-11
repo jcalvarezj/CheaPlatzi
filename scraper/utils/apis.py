@@ -2,9 +2,10 @@
 This module contains the definiton of functions for API consuming
 """
 import time
+import json
 import grequests
-from .constants import HEADERS
 from .constants import MercadoLibreConfig as MLC
+from .constants import HEADERS, SITE_IDS, BRAND_IDS
 
 
 def _handle_exception(request, exception):
@@ -15,7 +16,7 @@ def _handle_exception(request, exception):
     print(exception)
 
 
-def _parse_endpoint(endpoint, params_dict):
+def parse_endpoint(endpoint, params_dict):
     """
     Returns the endpoint with values parameters replaced with their values
     """
@@ -63,7 +64,7 @@ def scrap_request(endpoints, params_dict = {}, verbose = False):
     pending_requests = []
 
     for endpoint in endpoints:
-        parsed_endpoint = _parse_endpoint(endpoint, params_dict)
+        parsed_endpoint = parse_endpoint(endpoint, params_dict)
 
         pending_requests.append(grequests.get(parsed_endpoint,
                                               headers = HEADERS))
@@ -116,7 +117,7 @@ def _get_all_mercadolibre_urls(product_index_url, limit):
     return urls
 
 
-def _scrap_mercadolibre_product_pages(product_responses, verbose):
+def _scrap_mercadolibre_product_pages(product_responses, brand_id, verbose):
     """
     Scraps MercadoLibre's product pages from the passed responses
     """
@@ -125,6 +126,8 @@ def _scrap_mercadolibre_product_pages(product_responses, verbose):
     for i, product_response in enumerate(product_responses):
         if product_response:
             products = product_response.json()['results']
+
+            print(f'PRODUCTS OF {brand_id} ARE!!!!!! \n {products}')
 
             for product in products:
                 params = { MLC.PRODUCT_ID_PARAM.value: product['id'] }
@@ -154,8 +157,8 @@ def _scrap_mercadolibre_product_pages(product_responses, verbose):
                         image = "{PROBLEM OBTAINING THIS ITEM'S IMAGE URL}"
 
                 records.append({
-                    'id_type_product': None,
                     'id_ecommerce': SITE_IDS['MercadoLibre'],
+                    'id_type_product': brand_id,
                     'name': product['title'],
                     'description': description,
                     'price': product['price'],
@@ -187,7 +190,14 @@ def scrap_mercadolibre(limit = MLC.LIMIT.value, verbose = False):
         product_responses.append(response[0])
         time.sleep(MLC.DELAY_IN_SECS.value)
 
-        records = _scrap_mercadolibre_product_pages(product_responses,
+        brand = BRAND_IDS['playstation'] if 'ps4' in url \
+                else BRAND_IDS['nintendo'] if 'nintendo' in url \
+                    else BRAND_IDS['xbox'] if 'xbox' in url \
+                        else None
+
+        print(f'Because {url} --- BRAND: {brand}')
+
+        records = _scrap_mercadolibre_product_pages(product_responses, brand,
                                                     verbose)
         index = f'{i}'.zfill(3)
         file_name = MLC.EXPORT_FILE_PATH.value.replace('.json',

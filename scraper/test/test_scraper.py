@@ -2,10 +2,12 @@
 This module performs unit tests on the scraper module
 """
 import os
+import sys
 import json
 import pytest
 import requests
 import responses
+import urllib.parse
 from scrapy.crawler import CrawlerProcess
 from ..utils import apis
 from ..utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider
@@ -32,19 +34,21 @@ def _generate_mock_response_file(base_file_URIs, is_index = True):
     for file_URI in base_file_URIs:
         with open(file_URI, encoding = 'utf-8') as json_file:
             data = json.load(json_file)
-
             path = MLC.TEST_PATH.value
+            PROTOCOL = 'file:///' if sys.platform.startswith('win') \
+                       else 'file://'
+            base_URI = urllib.parse.quote(f'{PROTOCOL}{path}', safe = '/:')
 
             if not is_index:
                 current_image = data['pictures'][0]['secure_url']
                 new_value = ''
 
                 if current_image == '$XBOXIMAGE':
-                    new_value = f'file:{path}/xbox.jpg'
+                    new_value = f'{base_URI}/xbox.jpg'
                 elif current_image == '$SWITCHIMAGE':
-                    new_value = f'file:{path}/switch.jpg'
+                    new_value = f'{base_URI}/switch.jpg'
                 else:
-                    new_value = f'file:{path}/play.jpg'                    
+                    new_value = f'{base_URI}/play.jpg'                    
 
                 data['pictures'][0]['secure_url'] = new_value
             else:
@@ -52,11 +56,11 @@ def _generate_mock_response_file(base_file_URIs, is_index = True):
                 new_value = ''
 
                 if current_link == '$XBOXLINK':
-                    new_value = f'file:{path}/xbox_mock.html'
+                    new_value = f'{base_URI}/xbox_mock.html'
                 elif current_link == '$SWITCHLINK':
-                    new_value = f'file:{path}/switch_mock.html'
+                    new_value = f'{base_URI}/switch_mock.html'
                 else:
-                    new_value = f'file:{path}/playstation_mock.html'
+                    new_value = f'{base_URI}/playstation_mock.html'
 
                 data['results'][0]['permalink'] = new_value
             
@@ -104,14 +108,42 @@ def _cgamer_setup():
 
 
 def _assert_file_exists_and_matches_expected_value(file_path, expected):
-    message = 'the exported json file does not match the expected result'
-
-    assert os.path.exists(file_path), f'expected the file {file_path} to exist'
+    """
+    This function tests the existence of the expected file and that it matches
+    the expected data
+    """
+    file_message = f'expected the file {file_path} to exist'
+    json_message = 'the exported json file does not match the expected result'
+    
+    assert os.path.exists(file_path), file_message
 
     with open(file_path) as json_file:
         data = json.load(json_file)
         
-        assert data == expected, message
+        assert data == expected, json_message
+
+
+def _assert_files_exist_and_match_expected_value(file_paths, expected):
+    """
+    This function tests the existence of the expected files and that they 
+    match the expected data
+    """
+    json_message = 'the exported json files don\'t match the expected result'
+
+    data = []
+
+    for path in file_paths:
+        assert os.path.exists(path), f'expected the file {path} to exist'
+
+        with open(path) as json_file:
+            data.append(json.load(json_file)[0])
+    
+    print('DATA!!!!!!!!!!\n')
+    print(data)
+    print('\nEXPECTED!!!!!\n')
+    print(expected)
+
+    assert data == expected, json_message
 
 
 # def test_olx_scrapper_happy_path_json_data_exported():
@@ -142,16 +174,15 @@ def _assert_file_exists_and_matches_expected_value(file_path, expected):
 #     _cleanup(file_path)
 
 
-def _add_responses(response_URIs, mock_URL):
+def _map_responses(response_URIs, mock_URLs):
+    """
+    Maps mock responses to endpoints
+    """
     for i in range(0, len(response_URIs)):
         with open(response_URIs[i], 'r', encoding = 'utf-8') as json_file:
-            print(f'Going to {response_URIs[i]}\n')
             data = json.load(json_file)
-            print(f'Read {data}\n')
-            print('ADDING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-            responses.add(responses.GET, mock_URL,
+            responses.add(responses.GET, mock_URLs[i],
                           json = data, status = 200)
-            print(f'Addded {mock_URL} to mock {data}\n')
 
 
 @responses.activate
@@ -160,31 +191,35 @@ def test_mercadolibre_api_consuming_happy_path_json_data_exported():
     This test case checks if MercadoLibre's API consuming generates the right
     json file after scraping a mock with MercadoLibre's expected responses
     """
+    file_path = f'{MLC.EXPORT_FILE_PATH.value}'
+    output_files = []
+
+    for i in range(0, 3):
+        index = f'{i}'.zfill(3)
+        output_files.append(file_path.replace('.json', f'{index}.json'))
+        _cleanup(output_files[i])
+
     _mercadolibre_setup()
 
     index_URIs = [f'{MLC.TEST_PATH.value}/{file_name}'
                   for file_name in MLC.TEST_INDEX_FILES_PARSED.value]
     
-    _add_responses(index_URIs, MLC.SEARCH_URL.value)
+    _map_responses(index_URIs, MLC.TEST_INDEX_URLS.value)
     
     desc_URIs = [f'{MLC.TEST_PATH.value}/{file_name}'
                  for file_name in MLC.TEST_DESCRIPTION_FILES.value]
 
-    _add_responses(desc_URIs, MLC.DESC_URL.value)
+    _map_responses(desc_URIs, MLC.TEST_DESCRIPTION_URLS.value)
 
-    detail_URIs = [f'{MLC.TEST_PATH.value}/{file_name.replace("base_", "")}'
-                         for file_name in MLC.TEST_PRODUCT_FILES_PARSED.value]
+    detail_URIs = [f'{MLC.TEST_PATH.value}/{file_name}'
+                   for file_name in MLC.TEST_PRODUCT_FILES_PARSED.value]
 
-    _add_responses(detail_URIs, MLC.DETAIL_URL.value)
+    _map_responses(detail_URIs, MLC.TEST_PRODUCT_URLS.value)
 
     apis.scrap_mercadolibre(0)
 
-    file_path = f'{CGamer.EXPORT_FILE_PATH.value}'
-    output_file = file_path.replace('.json', '000.json')
-
-    _assert_file_exists_and_matches_expected_value(output_file,
-                                                   MLC.TEST_PRODUCTS.value)
-    _cleanup(output_file)
+    _assert_files_exist_and_match_expected_value(output_files,
+                                              MLC.TEST_PRODUCTS.value)
 
     index_mock_paths = [f'{MLC.TEST_PATH_RELATIVE.value}/{file_name}'
                         for file_name in MLC.TEST_INDEX_FILES_PARSED.value]
@@ -196,3 +231,6 @@ def test_mercadolibre_api_consuming_happy_path_json_data_exported():
 
     for path in product_mock_paths:
         _cleanup(path)
+
+    for output_file in output_files:        
+        _cleanup(output_file)

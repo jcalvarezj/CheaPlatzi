@@ -88,9 +88,9 @@ class MercadoLibreConfig(Enum):
     BASE_SITE_URL = f'{BASE_URL}/sites/{COUNTRY_ID}'
     SEARCH_URL = f'{BASE_SITE_URL}/search'
     PRODUCT_URLS = [
-        f'{SEARCH_URL}?q=xbox%20one',
+        f'{SEARCH_URL}?q=nintendo%20switch',
         f'{SEARCH_URL}?q=ps4',
-        f'{SEARCH_URL}?q=nintendo%20switch'
+        f'{SEARCH_URL}?q=xbox%20one'
     ]
     DETAIL_URL = f'{BASE_URL}/items/{PRODUCT_ID_PARAM}'
     DESC_URL = f'{DETAIL_URL}/description'
@@ -100,35 +100,41 @@ class MercadoLibreConfig(Enum):
     TEST_INDEX_URLS = list(map(lambda url: f'{url}&offset=0&limit=0',
                            PRODUCT_URLS))
     TEST_DESCRIPTION_URLS = [
-        DESC_URL.replace(f'{PRODUCT_ID_PARAM}', TEST_XBOX_ID),
-        DESC_URL.replace(f'{PRODUCT_ID_PARAM}', TEST_PS4_ID),
-        DESC_URL.replace(f'{PRODUCT_ID_PARAM}', TEST_SWITCH_ID)
+        DESC_URL.replace(PRODUCT_ID_PARAM, TEST_SWITCH_ID),
+        DESC_URL.replace(PRODUCT_ID_PARAM, TEST_PS4_ID),
+        DESC_URL.replace(PRODUCT_ID_PARAM, TEST_XBOX_ID)
     ]
     TEST_PRODUCT_URLS = [
-        DETAIL_URL.replace(f'{PRODUCT_ID_PARAM}', TEST_XBOX_ID),
-        DETAIL_URL.replace(f'{PRODUCT_ID_PARAM}', TEST_PS4_ID),
-        DETAIL_URL.replace(f'{PRODUCT_ID_PARAM}', TEST_SWITCH_ID)
+        DETAIL_URL.replace(PRODUCT_ID_PARAM, TEST_SWITCH_ID),
+        DETAIL_URL.replace(PRODUCT_ID_PARAM, TEST_PS4_ID),
+        DETAIL_URL.replace(PRODUCT_ID_PARAM, TEST_XBOX_ID)
     ]
     TEST_PATH_RELATIVE = 'scraper/test/mercadolibre_mocks'
     TEST_PATH = f'{os.getcwd()}/{TEST_PATH_RELATIVE}'
-    TEST_INDEX_FILES = ['xbox_index_base.json', 'playstation_index_base.json',
-                        'switch_index_base.json']
-    TEST_INDEX_FILES_PARSED = ['xbox_index.json', 'playstation_index.json',
-                               'switch_index.json']
+    TEST_INDEX_FILES = [
+        'switch_index_base.json',
+        'playstation_index_base.json',
+        'xbox_index_base.json'
+    ]
+    TEST_INDEX_FILES_PARSED = [
+        'switch_index.json',
+        'playstation_index.json',
+        'xbox_index.json'
+    ]
     TEST_DESCRIPTION_FILES = [
-        'xbox_description.json',
+        'switch_description.json',
         'playstation_description.json',
-        'switch_description.json'
+        'xbox_description.json'
     ]
     TEST_PRODUCT_FILES = [
-        'xbox_product_base.json',
+        'switch_product_base.json',
         'playstation_product_base.json',
-        'switch_product_base.json'
+        'xbox_product_base.json'
     ]
     TEST_PRODUCT_FILES_PARSED = [
-        'xbox_product.json',
+        'switch_product.json',
         'playstation_product.json',
-        'switch_product.json'
+        'xbox_product.json'
     ]
     TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['MercadoLibre'])
     EXPORT_FILE_PATH = 'export/ml_items.json'
