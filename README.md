@@ -13,7 +13,9 @@ Web application that helps the user compare prices of items among different e-co
 
 - Create a new virtual environment using **virtualenv**
 
-    For example, `virtualenv venv`
+    For example, `virtualenv venv` or   `python3 -m venv venv`
+
+
 
 - Activate venv
 
