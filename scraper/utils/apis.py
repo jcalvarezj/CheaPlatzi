@@ -87,7 +87,6 @@ def store_request(page_list, endpoint, verbose):
     pending_requests = []
 
     for page_data in page_list:
-        print(f'The data to send is\n{page_data}')
         pending_requests.append(grequests.post(endpoint, data = page_data,
                                                headers = HEADERS))    
     responses = grequests.map(pending_requests, 
@@ -126,8 +125,6 @@ def _scrap_mercadolibre_product_pages(product_responses, brand_id, verbose):
     for i, product_response in enumerate(product_responses):
         if product_response:
             products = product_response.json()['results']
-
-            print(f'PRODUCTS OF {brand_id} ARE!!!!!! \n {products}')
 
             for product in products:
                 params = { MLC.PRODUCT_ID_PARAM.value: product['id'] }
@@ -182,7 +179,7 @@ def scrap_mercadolibre(limit = MLC.LIMIT.value, verbose = False):
     for product_url in MLC.PRODUCT_URLS.value:
         pages_urls.extend(_get_all_mercadolibre_urls(product_url, limit))
     
-    N = len(pages_urls)    
+    N = len(pages_urls)
 
     for i, url in enumerate(pages_urls):
         product_responses = []
@@ -195,8 +192,6 @@ def scrap_mercadolibre(limit = MLC.LIMIT.value, verbose = False):
                     else BRAND_IDS['xbox'] if 'xbox' in url \
                         else None
 
-        print(f'Because {url} --- BRAND: {brand}')
-
         records = _scrap_mercadolibre_product_pages(product_responses, brand,
                                                     verbose)
         index = f'{i}'.zfill(3)
@@ -207,3 +202,5 @@ def scrap_mercadolibre(limit = MLC.LIMIT.value, verbose = False):
             json.dump(records, export_file, ensure_ascii = False)
         
         print(f'Scraped page {i + 1} of {N}')
+
+    return N

@@ -90,7 +90,7 @@ def run(site, verbose, store):
         `python3 ./scraper/scraper.py --site=<index> [--verbose] [--store]`
     """
     if site == 0:
-        apis.scrap_mercadolibre(verbose = verbose)
+        N = apis.scrap_mercadolibre(verbose = verbose)
 
         print(f'Finished scraping MercadoLibre!\n')
 
