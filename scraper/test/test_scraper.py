@@ -23,10 +23,11 @@ def olx_setup():
     """
     Initializes the required conditions for testing on OLX's site
     """
-    fileURI = f'file:{OLX.TEST_PATH.value}/{OLX.TEST_FILE.value}'
+    fileURIs = [f'file:{OLX.TEST_PATH.value}/{file_name}' for file_name
+                in OLX.TEST_FILES.value]
 
     process = CrawlerProcess()
-    process.crawl(OLXSpider, start_urls = [fileURI])
+    process.crawl(OLXSpider, start_urls = fileURIs)
     process.start()
 
 
@@ -54,7 +55,7 @@ def gamepl_setup():
 
 def mixup_setup():
     """
-    Initializes the required conditions for testing on GamePlanet's site
+    Initializes the required conditions for testing on MixUp's site
     """
     fileURIs = [f'file:{MUC.TEST_PATH.value}/{file_name}' for file_name 
                 in MUC.TEST_FILES.value]
@@ -63,9 +64,9 @@ def mixup_setup():
     process.crawl(MixUpSpider, start_urls = fileURIs)
     process.start()
 
-    def sears_setup():
+def sears_setup():
     """
-    Initializes the required conditions for testing on GamePlanet's site
+    Initializes the required conditions for testing on Sears's site
     """
     fileURIs = [f'file:{SEA.TEST_PATH.value}/{file_name}' for file_name 
                 in SEA.TEST_FILES.value]
@@ -93,7 +94,6 @@ def test_olx_scrapper_happy_path_json_data_exported():
                 'the exported json file does not match the expected result'
 
     cleanup(file_path)
-
 
 def test_cgamer_scrapper_happy_path_json_data_exported():
     """

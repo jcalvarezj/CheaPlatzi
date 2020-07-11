@@ -80,7 +80,6 @@ def store_request(page_list, endpoint, verbose):
     pending_requests = []
 
     for page_data in page_list:
-        print(f'The data to send is\n{page_data}')
         pending_requests.append(grequests.post(endpoint, data = page_data,
                                                headers = HEADERS))    
     responses = grequests.map(pending_requests, 
