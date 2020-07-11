@@ -329,7 +329,7 @@ class SearSpider(scrapy.Spider):
         price = int(float(price.replace("$","").replace(",","")))
 
         image_xp = (f'//ul[contains(@class,{SEA.IMAGE_CLASS.value})]/li/img/@src')
-        image = response.urljoin(response.xpath(image_xp)[0].get())
+        image = response.xpath(image_xp)[0].get()
 
         tag_xp = (f'//div[@class = "breadcrumb"]/ul/li[3]/a/text()')
         tag_product = response.xpath(tag_xp).get()
