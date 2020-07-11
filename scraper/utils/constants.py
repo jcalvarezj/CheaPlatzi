@@ -15,6 +15,11 @@ SITE_IDS = {
     'ColombiaGamer': 2,
     'OLX': 3
 }
+BRAND_IDS = {
+    'nintendo': 1,
+    'xbox': 2,
+    'playstation': 3
+}
 BACKEND_URL = 'https://cheaplatzi.uc.r.appspot.com/api/product'
 
 
@@ -94,15 +99,24 @@ class OLXConfig(Enum):
     """
     This enum provides configuration constants for OLX scraping
     """
-    PRODUCTS_URL = 'https://www.olx.com.co/video-juegos-consolas_c1022'
+    BASE_URL = 'https://www.olx.com.co/video-juegos-consolas_c1022'
+    PRODUCT_URLS = [
+        f'{BASE_URL}/q-xbox-one',
+        f'{BASE_URL}/q-ps4',
+        f'{BASE_URL}/q-switch'
+    ]
     SPIDER_NAME = 'olxspider'
+    DRIVER_TIMEOUT = 30
+    DELAY_IN_SECS = 3
+    BTN_CLASS = 'btnLoadMore'
     ITEM_CLASS = 'itemBox'
     EXPORT_FILE_PATH = 'export/olx_items.json'
     RIGHT_SECT_CLASS = '_2wMiF'
     LEFT_SECT_CLASS = 'CBG3S'
     IMG_DIV_CLASS = 'slick-active'
     TEST_PATH = f'{os.getcwd()}/scraper/test/olx_mocks'
-    TEST_FILE = 'olx_mock.html'
+    TEST_FILES = ['olx_switch_mock.html', 'olx_playstation_mock.html',
+                  'olx_xbox_mock.html']
     TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['OLX'])
 
 

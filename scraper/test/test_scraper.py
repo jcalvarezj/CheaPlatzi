@@ -23,10 +23,11 @@ def olx_setup():
     """
     Initializes the required conditions for testing on OLX's site
     """
-    fileURI = f'file:{OLX.TEST_PATH.value}/{OLX.TEST_FILE.value}'
+    fileURIs = [f'file:{OLX.TEST_PATH.value}/{file_name}' for file_name
+                in OLX.TEST_FILES.value]
 
     process = CrawlerProcess()
-    process.crawl(OLXSpider, start_urls = [fileURI])
+    process.crawl(OLXSpider, start_urls = fileURIs)
     process.start()
 
 
