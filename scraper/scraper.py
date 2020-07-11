@@ -9,8 +9,8 @@ import click
 import utils.apis as apis
 from scrapy.crawler import CrawlerProcess
 from utils.constants import MercadoLibreConfig as MLC, BACKEND_URL, SITE_IDS
-from utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider
-from utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
+from utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider, GamePlSpider, MixUpSpider, SearSpider
+from utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer, GamePlanetConfig as GamePl, SearsConfig as SEAConfig, MixUpConfig as MUConfig
 
 
 def _store_in_remote_database(results_path, scrap_api = False, n_pages = 0,
@@ -145,7 +145,10 @@ def run(site, verbose, store):
 
     0: MercadoLibre\n
     1: OLX\n
-    2: ColombiaGamer
+    2: ColombiaGamer\n
+    3: GamePlanet\n
+    4: Sears\n
+    5: MixUp\n
 
     Windows Use: 
     
@@ -195,8 +198,22 @@ def run(site, verbose, store):
         process = CrawlerProcess()
         process.crawl(CGamerSpider, start_urls = CGamer.PRODUCT_URLS.value)
         process.start()
-
         print(f'Finished scraping ColombiaGamer!\n')
+    elif site == 3:
+        process = CrawlerProcess()
+        process.crawl(GamePlSpider, start_urls = GamePl.PRODUCT_URLS.value)
+        process.start()
+        print(f'Finished scraping GamePlanet!\n')
+    elif site == 4:
+        process = CrawlerProcess()
+        process.crawl(SearSpider, start_urls = SEAConfig.PRODUCT_URLS.value)
+        process.start()
+        print(f'Finished scraping Sears!\n')
+    elif site == 5:
+        process = CrawlerProcess()
+        process.crawl(MixUpSpider, start_urls = MUConfig.PRODUCT_URLS.value)
+        process.start()
+        print(f'Finished scraping MixUp!\n')
 
         if store:
             _store_in_remote_database(CGamer.EXPORT_FILE_PATH.value,
