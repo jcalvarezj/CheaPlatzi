@@ -80,6 +80,9 @@ class OLXSpider(scrapy.Spider):
         desc_xp = f'//section[@class="{OLX.LEFT_SECT_CLASS.value}"]//p/text()'
         description = response.xpath(desc_xp).get()
 
+        if not description:
+            description = ''
+
         price_xp = (f'//section[@class="{OLX.RIGHT_SECT_CLASS.value}"]//span/'
                     'text()')
         price = int(response.xpath(price_xp).get().replace('$ ','') \
