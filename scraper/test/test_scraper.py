@@ -119,6 +119,7 @@ def gamepl_setup():
     process.crawl(GamePlSpider, start_urls = fileURIs)
     process.start()
 
+
 def mixup_setup():
     """
     Initializes the required conditions for testing on MixUp's site
@@ -262,7 +263,7 @@ def test_mercadolibre_api_consuming_happy_path_json_data_exported():
     for path in product_mock_paths:
         _cleanup(path)
 
-    for output_file in output_files:        
+    for output_file in output_files:
         _cleanup(output_file)
 
 
@@ -302,6 +303,7 @@ def test_mixup_scrapper_happy_path_json_data_exported():
                 'the exported json file does not match the expected result'
 
     _cleanup(file_path)
+
 
 def test_sears_scrapper_happy_path_json_data_exported():
     """

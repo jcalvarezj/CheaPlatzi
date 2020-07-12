@@ -266,4 +266,3 @@ class SearsConfig(Enum):
     TEST_PATH = f'{os.getcwd()}/scraper/test/sears_mocks'
     TEST_FILES = ['sears_mock.html']
     TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['Sears'])
-
