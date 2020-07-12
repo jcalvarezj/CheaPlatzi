@@ -39,6 +39,7 @@ pytest==5.4.3
 pytz==2020.1
 queuelib==1.5.0
 requests==2.24.0
+responses==0.10.15
 Scrapy==2.2.0
 selenium==3.141.0
 service-identity==18.1.0

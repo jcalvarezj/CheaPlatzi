@@ -63,72 +63,6 @@ def _find_contains_among_records(records_collection, match, prop):
             if match.upper() in record[prop].upper()]
 
 
-def _get_all_mercadolibre_urls():
-    """
-    Generates a list of MercadoLibre product URLs for scraping (item offsets)
-    """
-    urls = []
-
-    for coef in range(0, MLC.MAX_OFFSET.value // MLC.LIMIT.value + 1):
-        params = f'&offset={coef * MLC.LIMIT.value}&limit={MLC.LIMIT.value}'
-        urls.append(f'{MLC.PRODUCTS_URL.value}{params}')
-
-    return urls
-
-
-def _scrap_mercadolibre_product_pages(product_responses, verbose):
-    """
-    Scraps MercadoLibre's product pages from the passed responses
-    """
-    records = []
-        
-    for i, product_response in enumerate(product_responses):
-        products = product_response.json()['results']
-
-        print(f'Going to scrap {len(products)} items')
-
-        for product in products:
-            params = { MLC.PRODUCT_ID_PARAM.value: product['id'] }
-
-            description_responses = apis.scrap_request([MLC.DESC_URL.value],
-                                                    params, verbose)
-
-            time.sleep(MLC.DELAY_IN_SECS.value)
-
-            img_responses = apis.scrap_request([MLC.DETAIL_URL.value], params,
-                                                verbose)
-
-            time.sleep(MLC.DELAY_IN_SECS.value)
-
-            description = ""
-            if description_responses:
-                try:
-                    description = description_responses[0].json()['plain_text']
-                except Exception:
-                    description = "{PROBLEM OBTAINING THIS ITEM'S DESCRIPTION}"
-
-            image = ""
-            if img_responses:
-                try:
-                    image = img_responses[0].json()['pictures'][0]['secure_url']
-                except Exception:
-                    image = "{PROBLEM OBTAINING THIS ITEM'S IMAGE URL}"
-
-            records.append({
-                'id_type_product': None,
-                'id_ecommerce': SITE_IDS['MercadoLibre'],
-                'name': product['title'],
-                'description': description,
-                'price': product['price'],
-                'image': image,
-                'url': product['permalink']
-            })
-
-            time.sleep(MLC.DELAY_IN_SECS.value)
-
-    return records
-
-
 @click.command()
 @click.option('--site', help = 'The index of the site to scrap', type = int,
               required = True)
@@ -159,25 +93,7 @@ def run(site, verbose, store):
         `python3 ./scraper/scraper.py --site=<index> [--verbose] [--store]`
     """
     if site == 0:
-        urls = _get_all_mercadolibre_urls()
-        N = MLC.MAX_OFFSET.value // MLC.LIMIT.value + 1
-
-        for i, url in enumerate(urls):
-            product_responses = []
-            response = apis.scrap_request([url], verbose = verbose)
-            product_responses.append(response[0])
-            time.sleep(MLC.DELAY_IN_SECS.value)
-
-            records = _scrap_mercadolibre_product_pages(product_responses,
-                                                        verbose)
-            index = f'{i}'.zfill(3)
-            file_name = MLC.EXPORT_FILE_PATH.value.replace('.json',
-                                                           f'{index}.json')
-
-            with open(file_name, 'w', encoding = 'utf-8') as export_file:
-                json.dump(records, export_file, ensure_ascii = False)
-            
-            print(f'Scraped page {i+1} of {N}')
+        N = apis.scrap_mercadolibre(verbose = verbose)
 
         print(f'Finished scraping MercadoLibre!\n')
 
