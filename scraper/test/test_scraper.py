@@ -8,11 +8,13 @@ import pytest
 import requests
 import responses
 import urllib.parse
-from scrapy.crawler import CrawlerProcess
 from ..utils import apis
-from ..utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider, GamePlSpider, MixUpSpider, SearSpider
-from ..utils.constants import MercadoLibreConfig as MLC
-from ..utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer, GamePlanetConfig as GamePl, MixUpConfig as MUC, SearsConfig as SEA
+from ..utils.spiders import GamePlSpider, MixUpSpider, SearSpider
+from ..utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider
+from ..utils.constants import MercadoLibreConfig as MLC, SearsConfig as SEA
+from ..utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
+from ..utils.constants import GamePlanetConfig as GamePl, MixUpConfig as MUC
+from scrapy.crawler import CrawlerProcess
 
 
 def _cleanup(created_file_path):
@@ -108,7 +110,7 @@ def _cgamer_setup():
     process.start()
 
 
-def gamepl_setup():
+def _gamepl_setup():
     """
     Initializes the required conditions for testing on GamePlanet's site
     """
@@ -120,7 +122,7 @@ def gamepl_setup():
     process.start()
 
 
-def mixup_setup():
+def _mixup_setup():
     """
     Initializes the required conditions for testing on MixUp's site
     """
@@ -132,7 +134,7 @@ def mixup_setup():
     process.start()
 
 
-def sears_setup():
+def _sears_setup():
     """
     Initializes the required conditions for testing on Sears's site
     """
@@ -274,7 +276,7 @@ def test_gamepl_scrapper_happy_path_json_data_exported():
     """
     file_path = f'{GamePl.EXPORT_FILE_PATH.value}'
     _cleanup(file_path)
-    gamepl_setup()
+    _gamepl_setup()
 
     assert os.path.exists(file_path), f'expected the file {file_path} to exist'
 
@@ -293,7 +295,7 @@ def test_mixup_scrapper_happy_path_json_data_exported():
     """
     file_path = f'{MUC.EXPORT_FILE_PATH.value}'
     _cleanup(file_path)
-    mixup_setup()
+    _mixup_setup()
 
     assert os.path.exists(file_path), f'expected the file {file_path} to exist'
 
@@ -312,7 +314,7 @@ def test_sears_scrapper_happy_path_json_data_exported():
     """
     file_path = f'{SEA.EXPORT_FILE_PATH.value}'
     _cleanup(file_path)
-    sears_setup()
+    _sears_setup()
 
     assert os.path.exists(file_path), f'expected the file {file_path} to exist'
 
