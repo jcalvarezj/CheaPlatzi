@@ -36,6 +36,15 @@ class OLXSpider(scrapy.Spider):
         'AUTOTHROTTLE_ENABLED': True
     }
 
+    def __init__(self, *args, **kwargs):
+        """
+        Constructor that initializes the Spider instance and sets it up
+        """
+        super().__init__(*args, **kwargs)
+        chrome_options = Options()  
+        chrome_options.add_argument("--headless")
+        self.driver = webdriver.Chrome(ChromeDriverManager().install())
+        # chrome_options=chrome_options)
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -54,6 +63,7 @@ class OLXSpider(scrapy.Spider):
         Function that is called in the moment of Spider termination. The Spider
         calls it's Selenium driver quit method
         """
+        self.driver.close()
         spider.driver.quit()
 
 
@@ -95,7 +105,6 @@ class OLXSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
-        self.driver = webdriver.Chrome(ChromeDriverManager().install())
         self.driver.get(response.url)
 
         button_xp = f'//button[@data-aut-id="{OLX.BTN_CLASS.value}"]'
@@ -104,10 +113,11 @@ class OLXSpider(scrapy.Spider):
             WebDriverWait(self.driver, OLX.DRIVER_TIMEOUT.value).until(
                 EC.presence_of_element_located((By.XPATH, button_xp))
             )
-        except TimeoutError:
+            button = self.driver.find_element_by_xpath(button_xp)
+        except TimeoutException:
             self.log('The page took too long to load. Reached timeout.')
+            button = False
         
-        button = self.driver.find_element_by_xpath(button_xp)
 
         while button:
             try:
@@ -119,8 +129,6 @@ class OLXSpider(scrapy.Spider):
         product_xp = f'//li[@data-aut-id="{OLX.ITEM_CLASS.value}"]/a[@href]'
         a_tags = self.driver.find_elements_by_xpath(product_xp)
         product_urls = [a.get_attribute('href') for a in a_tags]
-
-        self.driver.close()
 
         brand = None
 
@@ -376,10 +384,10 @@ class SearSpider(scrapy.Spider):
 
         price_xp = f'//p[@class = "{SEA.PRICE_CLASS.value}"]/text()'
         price = response.xpath(price_xp).get()
-        price = int(float(price.replace("$","").replace(",","")))
+        price = int(float(price.replace("$","").replace(",","").replace(".","")))
 
         image_xp = (f'//ul[contains(@class,{SEA.IMAGE_CLASS.value})]/li/img/@src')
-        image = response.xpath(image_xp)[0].get()
+        image = response.urljoin(response.xpath(image_xp)[0].get())
 
         tag_xp = (f'//div[@class = "breadcrumb"]/ul/li[3]/a/text()')
         tag_product = response.xpath(tag_xp).get()
@@ -456,7 +464,7 @@ class MixUpSpider(scrapy.Spider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(OLXSpider, cls).from_crawler(crawler, *args, **kwargs)
+        spider = super(MixUpSpider, cls).from_crawler(crawler, *args, **kwargs)
         crawler.signals.connect(spider.spider_closed,
                                 signal = scrapy.signals.spider_closed)
         return spider
@@ -482,7 +490,7 @@ class MixUpSpider(scrapy.Spider):
         price_xp = f'//span[contains(@class, "{MU.PRICE_CLASS.value}")]/text()'
         price = response.xpath(price_xp)[1].get()
         price = price.strip()         
-        price = int(float(price.replace("$","").replace(",",""))) 
+        price = int(float(price.replace("$","").replace(",","").replace(".",""))) 
 
         image_xp = (f'//img[@id="{MU.IMAGE_ID.value}"]/@src')
         image = response.urljoin(response.xpath(image_xp).get())
@@ -524,10 +532,14 @@ class MixUpSpider(scrapy.Spider):
         for product in products:
             product_urls.append(product.get_attribute('href'))
 
-        next_button = self.driver.find_elements_by_xpath('//a[@id = "ctl00_container_linkPnts2Up"]')
-        next_button = next_button[0]
-        next_button.click()
-        condition = True
+        try:
+            next_button = self.driver.find_elements_by_xpath('//a[@id = "ctl00_container_linkPnts2Up"]')
+            next_button = next_button[0]
+            next_button.click()
+            condition = True
+        except IndexError:
+            condition = False
+            pass
 
         while (condition):
             self.log(f'condition: {condition}')
