@@ -114,14 +114,19 @@ class OLXSpider(scrapy.Spider):
 
         self.driver.close()
 
-        brand = BRAND_IDS['playstation'] if 'playstation' in response.url \
-                else BRAND_IDS['nintendo'] if 'nintendo' in response.url \
-                    else BRAND_IDS['xbox'] if 'xbox' in response.url \
-                        else None
+        brand = None
+
+        if 'ps4' in response.url or 'playstation' in response.url:
+            brand = BRAND_IDS['playstation']
+        elif 'nintendo' in response.url or 'switch' in response.url:
+            brand = BRAND_IDS['nintendo']
+        elif 'xbox' in response.url:
+            brand = BRAND_IDS['xbox']
 
         for url in product_urls:
            yield response.follow(url, callback = self.parse_product,
                                  meta = { 'brand': brand })
+
 
 class ColombiaGamerSpider(scrapy.Spider):
     """
@@ -170,7 +175,7 @@ class ColombiaGamerSpider(scrapy.Spider):
         image = response.urljoin(response.xpath(image_xp).get())
 
         yield {
-            'id_type_product': None,
+            'id_type_product': response.meta['brand'],
             'id_ecommerce': SITE_IDS['ColombiaGamer'],
             'name': name,
             'description': description,
@@ -200,8 +205,19 @@ class ColombiaGamerSpider(scrapy.Spider):
                       'h2/a/@href')
         product_urls = response.xpath(product_xp).getall()
 
+        brand = None
+
+        if 'ps4' in response.url or 'playstation' in response.url:
+            brand = BRAND_IDS['playstation']
+        elif 'nintendo' in response.url or 'switch' in response.url:
+            brand = BRAND_IDS['nintendo']
+        elif 'xbox' in response.url:
+            brand = BRAND_IDS['xbox']
+
         for url in product_urls:
-            yield response.follow(url, callback = self.parse_product)
+            yield response.follow(url, callback = self.parse_product,
+                                  meta = { 'brand': brand })
+
 
 class GamePlSpider(scrapy.Spider):
     """
@@ -222,12 +238,13 @@ class GamePlSpider(scrapy.Spider):
         'AUTOTHROTTLE_ENABLED': True
     }
 
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install())
-        # chrome_options=chrome_options)
+
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -300,6 +317,7 @@ class GamePlSpider(scrapy.Spider):
         product_urls = self.driver.find_elements_by_xpath(product_xp)
         for url in product_urls:
             yield response.follow(url.get_attribute('href'), callback = self.parse_product)
+
 
 class SearSpider(scrapy.Spider):
     """
@@ -383,6 +401,7 @@ class SearSpider(scrapy.Spider):
         for url in product_urls:
             yield response.follow(url, callback = self.parse_product)
 
+
 class MixUpSpider(scrapy.Spider):
     """
     This spider scraps products from the MixUp e-commerce site
@@ -402,12 +421,13 @@ class MixUpSpider(scrapy.Spider):
         'AUTOTHROTTLE_ENABLED': True
     }
 
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install())
-        # chrome_options=chrome_options)
+
 
     def parse_product(self, response):
         """
