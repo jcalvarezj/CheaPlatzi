@@ -204,13 +204,16 @@ class GamePlanetConfig(Enum):
     """
     This enum provides configuration constants for GamePlanet scraping
     """
+    BASE_URL = 'https://gameplanet.com/catalogo/video-juegos'
+    HW_RES = '/hardware.html?dir=desc&mostrar_inventario=652&order=popularidad'
+    SW_RES = '/software.html?dir=desc&mostrar_inventario=652&order=popularidad'
     PRODUCT_URLS = [
-        f'https://gameplanet.com/catalogo/video-juegos/hardware.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=660&mode=grid',
-        f'https://gameplanet.com/catalogo/video-juegos/hardware.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=667&mode=grid',
-        f'https://gameplanet.com/catalogo/video-juegos/hardware.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=671&mode=grid',
-        f'https://gameplanet.com/catalogo/video-juegos/software.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=660&mode=grid',
-        f'https://gameplanet.com/catalogo/video-juegos/software.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=667&mode=grid',
-        f'https://gameplanet.com/catalogo/video-juegos/software.html?dir=desc&mostrar_inventario=652&order=popularidad&plataforma=671&mode=grid',
+        f'{BASE_URL}{HW_RES}&plataforma=660&mode=grid',
+        f'{BASE_URL}{HW_RES}&plataforma=667&mode=grid',
+        f'{BASE_URL}{HW_RES}&plataforma=671&mode=grid',
+        f'{BASE_URL}{SW_RES}&plataforma=660&mode=grid',
+        f'{BASE_URL}{SW_RES}&plataforma=667&mode=grid',
+        f'{BASE_URL}{SW_RES}&plataforma=671&mode=grid',
     ]
     SPIDER_NAME = 'gameplspider'
     EXPORT_FILE_PATH = 'export/gamepl_items.json'
@@ -228,11 +231,12 @@ class MixUpConfig(Enum):
     """
     This enum provides configuration constants for MixUp scraping
     """
+    BASE_URL = 'https://www.mixup.com.mx/mixup/Productos.aspx'
     PRODUCT_URLS = [
-        'https://www.mixup.com.mx/mixup/Productos.aspx?etq=GAMNIN&etqP=GAM&bf=',
-        'https://www.mixup.com.mx/mixup/Productos.aspx?etq=GAMPS&etqP=GAM&bf=',
-        'https://www.mixup.com.mx/mixup/Productos.aspx?etq=GAMXBOX&etqP=GAM&bf=',
-        'https://www.mixup.com.mx/mixup/Productos.aspx?etq=GAMCON&etqP=GAM&bf='
+        f'{BASE_URL}?etq=GAMNIN&etqP=GAM&bf=',
+        f'{BASE_URL}?etq=GAMPS&etqP=GAM&bf=',
+        f'{BASE_URL}?etq=GAMXBOX&etqP=GAM&bf=',
+        f'{BASE_URL}?etq=GAMCON&etqP=GAM&bf='
     ]
     SPIDER_NAME = 'mixupspider'
     EXPORT_FILE_PATH = 'export/mixup_items.json'
@@ -245,6 +249,7 @@ class MixUpConfig(Enum):
     TEST_PATH = f'{os.getcwd()}/scraper/test/mixup_mocks'
     TEST_FILES = ['mixup_mock.html']
     TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['MixUp'])
+
 
 class SearsConfig(Enum):
     """

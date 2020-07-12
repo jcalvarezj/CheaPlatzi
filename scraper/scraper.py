@@ -8,9 +8,12 @@ import json
 import click
 import utils.apis as apis
 from scrapy.crawler import CrawlerProcess
+from utils.spiders import GamePlSpider, MixUpSpider, SearSpider
+from utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider
+from utils.constants import MixUpConfig as MUConfig
 from utils.constants import MercadoLibreConfig as MLC, BACKEND_URL, SITE_IDS
-from utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider, GamePlSpider, MixUpSpider, SearSpider
-from utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer, GamePlanetConfig as GamePl, SearsConfig as SEAConfig, MixUpConfig as MUConfig
+from utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
+from utils.constants import GamePlanetConfig as GamePl, SearsConfig as SEAConfig
 
 
 def _store_in_remote_database(results_path, scrap_api = False, n_pages = 0,

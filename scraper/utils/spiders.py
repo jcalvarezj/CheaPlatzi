@@ -3,23 +3,22 @@ This module contains all the scrapy spiders for the scraper module
 """
 import time
 import scrapy
-from .constants import SITE_IDS
-from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer, GamePlanetConfig as GamePl, MixUpConfig as MU, SearsConfig as SEA
 from selenium import webdriver
+from .constants import SITE_IDS, BRAND_IDS, SearsConfig as SEA
+from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
+from .constants import GamePlanetConfig as GamePl, MixUpConfig as MU
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
-import time
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import StaleElementReferenceException
-from .constants import SITE_IDS, BRAND_IDS
 
 
 class OLXSpider(scrapy.Spider):
     """
-    This spider scraps products from the OLX e-commerce site
+    This Spider scraps products from the OLX e-commerce site
     """
     name = OLX.SPIDER_NAME.value
     custom_settings = {
@@ -37,8 +36,13 @@ class OLXSpider(scrapy.Spider):
         'AUTOTHROTTLE_ENABLED': True
     }
 
+
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
+        """
+        This method connects the Spider with a termination signal in order to
+        automatically execute operations when the Spider closes
+        """
         spider = super(OLXSpider, cls).from_crawler(crawler, *args, **kwargs)
         crawler.signals.connect(spider.spider_closed,
                                 signal = scrapy.signals.spider_closed)
@@ -46,6 +50,10 @@ class OLXSpider(scrapy.Spider):
 
 
     def spider_closed(self, spider):
+        """
+        Function that is called in the moment of Spider termination. The Spider
+        calls it's Selenium driver quit method
+        """
         spider.driver.quit()
 
 
@@ -130,7 +138,7 @@ class OLXSpider(scrapy.Spider):
 
 class ColombiaGamerSpider(scrapy.Spider):
     """
-    This spider scraps products from the ColombiaGamer e-commerce site
+    This Spider scraps products from the ColombiaGamer e-commerce site
     """
     name = CGamer.SPIDER_NAME.value
     custom_settings = {
@@ -240,6 +248,9 @@ class GamePlSpider(scrapy.Spider):
 
 
     def __init__(self, *args, **kwargs):
+        """
+        Constructor that initializes the Spider instance and sets it up
+        """
         super().__init__(*args, **kwargs)
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
@@ -248,13 +259,23 @@ class GamePlSpider(scrapy.Spider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
+        """
+        This method connects the Spider with a termination signal in order to
+        automatically execute operations when the Spider closes
+        """
         spider = super(GamePlSpider, cls).from_crawler(crawler, *args, **kwargs)
         crawler.signals.connect(spider.spider_closed,
                                 signal = scrapy.signals.spider_closed)
         return spider
 
+
     def spider_closed(self, spider):
+        """
+        Function that is called in the moment of Spider termination. The Spider
+        calls it's Selenium driver quit method
+        """
         self.driver.quit()
+
 
     def parse_product(self, response):
         """
@@ -321,7 +342,7 @@ class GamePlSpider(scrapy.Spider):
 
 class SearSpider(scrapy.Spider):
     """
-    This spider scraps products from the Sears e-commerce site
+    This Spider scraps products from the Sears e-commerce site
     """
     name = SEA.SPIDER_NAME.value
     custom_settings = {
@@ -404,7 +425,7 @@ class SearSpider(scrapy.Spider):
 
 class MixUpSpider(scrapy.Spider):
     """
-    This spider scraps products from the MixUp e-commerce site
+    This Spider scraps products from the MixUp e-commerce site
     """
     name = MU.SPIDER_NAME.value
     custom_settings = {
@@ -423,6 +444,9 @@ class MixUpSpider(scrapy.Spider):
 
 
     def __init__(self, *args, **kwargs):
+        """
+        Constructor that initializes the Spider instance and sets it up
+        """
         super().__init__(*args, **kwargs)
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
@@ -463,7 +487,6 @@ class MixUpSpider(scrapy.Spider):
         if "playstation" in tag_product.lower():
             id_type_product = 3
         
-
         yield {
             'name': name,
             'description': description,
@@ -480,12 +503,12 @@ class MixUpSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
-        
         self.driver.get(response.url)
         
         product_urls = []
         product_xp = (f'//div[@class = "{MU.ITEM_CLASS_1.value}"]/div[@class = "{MU.ITEM_CLASS_2.value}"]/a')
         products = self.driver.find_elements_by_xpath(product_xp)
+
         for product in products:
             product_urls.append(product.get_attribute('href'))
 
@@ -493,6 +516,7 @@ class MixUpSpider(scrapy.Spider):
         next_button = next_button[0]
         next_button.click()
         condition = True
+
         while (condition):
             self.log(f'condition: {condition}')
             self.driver.implicitly_wait(2)
