@@ -119,6 +119,7 @@ def gamepl_setup():
     process.crawl(GamePlSpider, start_urls = fileURIs)
     process.start()
 
+
 def mixup_setup():
     """
     Initializes the required conditions for testing on MixUp's site
