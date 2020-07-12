@@ -43,8 +43,8 @@ class OLXSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
-        self.driver = webdriver.Chrome(ChromeDriverManager().install())
-        # chrome_options=chrome_options)
+        self.driver = webdriver.Chrome(ChromeDriverManager().install(),
+        chrome_options=chrome_options)
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -464,6 +464,7 @@ class MixUpSpider(scrapy.Spider):
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),
         chrome_options=chrome_options)
+
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
