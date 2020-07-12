@@ -227,6 +227,7 @@ class GamePlanetConfig(Enum):
     TEST_FILES = ['gameplanet_mock.html']
     TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['GamePlanet'])
 
+
 class MixUpConfig(Enum):
     """
     This enum provides configuration constants for MixUp scraping
