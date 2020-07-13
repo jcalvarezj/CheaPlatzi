@@ -179,34 +179,6 @@ def _assert_files_exist_and_match_expected_value(file_paths, expected):
     assert data == expected, json_message
 
 
-def test_olx_scrapper_happy_path_json_data_exported():
-    """
-    This test case checks if the scraper generates the right json file after
-    scraping a mock with OLX's site structure
-    """
-    file_path = f'{OLX.EXPORT_FILE_PATH.value}'
-    _cleanup(file_path)
-    _olx_setup()
-
-    _assert_file_exists_and_matches_expected_value(file_path,
-                                                   OLX.TEST_PRODUCTS.value)
-    _cleanup(file_path)
-
-
-def test_cgamer_scrapper_happy_path_json_data_exported():
-    """
-    This test case checks if the scraper generates the right json file after
-    scraping a mock with CGamer's site structure
-    """
-    file_path = f'{CGamer.EXPORT_FILE_PATH.value}'
-    _cleanup(file_path)
-    _cgamer_setup()
-
-    _assert_file_exists_and_matches_expected_value(file_path,
-                                                   CGamer.TEST_PRODUCTS.value)
-    _cleanup(file_path)
-
-
 def _map_responses(response_URIs, mock_URLs):
     """
     Maps mock responses to endpoints
@@ -219,6 +191,7 @@ def _map_responses(response_URIs, mock_URLs):
 
 
 @responses.activate
+@pytest.mark.mercadolibre
 def test_mercadolibre_api_consuming_happy_path_json_data_exported():
     """
     This test case checks if MercadoLibre's API consuming generates the right
@@ -269,6 +242,37 @@ def test_mercadolibre_api_consuming_happy_path_json_data_exported():
         _cleanup(output_file)
 
 
+@pytest.mark.olx
+def test_olx_scrapper_happy_path_json_data_exported():
+    """
+    This test case checks if the scraper generates the right json file after
+    scraping a mock with OLX's site structure
+    """
+    file_path = f'{OLX.EXPORT_FILE_PATH.value}'
+    _cleanup(file_path)
+    _olx_setup()
+
+    _assert_file_exists_and_matches_expected_value(file_path,
+                                                   OLX.TEST_PRODUCTS.value)
+    _cleanup(file_path)
+
+
+@pytest.mark.cgamer
+def test_cgamer_scrapper_happy_path_json_data_exported():
+    """
+    This test case checks if the scraper generates the right json file after
+    scraping a mock with CGamer's site structure
+    """
+    file_path = f'{CGamer.EXPORT_FILE_PATH.value}'
+    _cleanup(file_path)
+    _cgamer_setup()
+
+    _assert_file_exists_and_matches_expected_value(file_path,
+                                                   CGamer.TEST_PRODUCTS.value)
+    _cleanup(file_path)
+
+
+@pytest.mark.gamepl
 def test_gamepl_scrapper_happy_path_json_data_exported():
     """
     This test case checks if the scraper generates the right json file after
@@ -288,6 +292,7 @@ def test_gamepl_scrapper_happy_path_json_data_exported():
     _cleanup(file_path)
 
 
+@pytest.mark.mixup
 def test_mixup_scrapper_happy_path_json_data_exported():
     """
     This test case checks if the scraper generates the right json file after
@@ -307,6 +312,7 @@ def test_mixup_scrapper_happy_path_json_data_exported():
     _cleanup(file_path)
 
 
+@pytest.mark.sears
 def test_sears_scrapper_happy_path_json_data_exported():
     """
     This test case checks if the scraper generates the right json file after

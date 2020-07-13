@@ -32,7 +32,18 @@ Web application that helps the user compare prices of items among different e-co
 
 ## Testing
 
-To run unit tests on the scraper module, simply run `pytest` at the project's root. However, notice that only one test case can be run at the time due to the implementation of the Spiders. Additional work is still required to enable the execution of all test cases at the same time.
+To run unit tests on the scraper module, `pytest` is used at the project's root. However, notice that only one test case can be run at the time due to the implementation of the Spiders. To implement selected tests use:
+
+`pytest -m <name of the test>`
+
+Where `<name of the test>` can be:
+
+- mercadolibre
+- olx
+- cgamer
+- gamepl
+- mixup
+- sears
 
 
 ## Execution
