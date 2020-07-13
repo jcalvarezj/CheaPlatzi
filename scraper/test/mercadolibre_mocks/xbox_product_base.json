@@ -1,0 +1,118 @@
+{
+  "id": "MCO12347",
+  "site_id": "MCO",
+  "title": "Xbox One S",
+  "subtitle": null,
+  "seller_id": 123,
+  "category_id": "MCO2931",
+  "official_store_id": null,
+  "price": 1400000,
+  "base_price": 1400000,
+  "original_price": 2149900,
+  "currency_id": "COP",
+  "initial_quantity": 127,
+  "available_quantity": 50,
+  "sold_quantity": 25,
+  "sale_terms": [
+    {
+      "id": "WARRANTY_TYPE",
+      "name": "Tipo de garantía",
+      "value_id": "2230280",
+      "value_name": "Garantía del vendedor",
+      "value_struct": null,
+      "values": [
+        {
+          "id": "2230280",
+          "name": "Garantía del vendedor",
+          "struct": null
+        }
+      ]
+    },
+    {
+      "id": "WARRANTY_TIME",
+      "name": "Tiempo de garantía",
+      "value_id": null,
+      "value_name": "12 meses",
+      "value_struct": {
+        "number": 12,
+        "unit": "meses"
+      },
+      "values": [
+        {
+          "id": null,
+          "name": "12 meses",
+          "struct": {
+            "number": 12,
+            "unit": "meses"
+          }
+        }
+      ]
+    }
+  ],
+  "buying_mode": "buy_it_now",
+  "listing_type_id": "gold_special",
+  "start_time": "2020-04-02T16:32:08.000Z",
+  "stop_time": "2040-03-28T04:00:00.000Z",
+  "condition": "new",
+  "permalink": "$XBOXLINK",
+  "thumbnail": "http://images.com/MCO12347-I.jpg",
+  "secure_thumbnail": "https://images.com/MCO12347-I.jpg",
+  "pictures": [
+    {
+      "id": "996685-MCO41317149087_042020",
+      "url": "someimageurl",
+      "secure_url": "$XBOXIMAGE",
+      "size": "500x447",
+      "max_size": "1024x917",
+      "quality": ""
+    },
+    {
+      "id": "969549-MCO41317141100_042020",
+      "url": "otherimageurl",
+      "secure_url": "otherimageurlsecure",
+      "size": "500x438",
+      "max_size": "1083x950",
+      "quality": ""
+    }
+  ],
+  "video_id": null,
+  "descriptions": [
+    {
+      "id": "MCO558041379-2595190972"
+    }
+  ],
+  "accepts_mercadopago": true,
+  "non_mercado_pago_payment_methods": [],
+  "shipping": {
+    "mode": "me2",
+    "free_methods": [
+      {
+        "id": 501745,
+        "rule": {
+          "default": true,
+          "free_mode": "country",
+          "free_shipping_flag": true,
+          "value": null
+        }
+      }
+    ],
+    "tags": [
+      "self_service_in",
+      "mandatory_free_shipping"
+    ],
+    "dimensions": null,
+    "local_pick_up": false,
+    "free_shipping": true,
+    "logistic_type": "drop_off",
+    "store_pick_up": false
+  },
+  "international_delivery_mode": "none",
+  "seller_contact": null,
+  "location": {},
+  "coverage_areas": [],
+  "automatic_relist": false,
+  "date_created": "2020-04-02T16:32:08.000Z",
+  "last_updated": "2020-07-11T14:42:51.000Z",
+  "health": 0.87,
+  "catalog_listing": false
+}
