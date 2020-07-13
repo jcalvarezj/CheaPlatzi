@@ -1,2 +1,6 @@
 venv/
 __pycache__/
+db.sqlite3
+app.yaml
+geckodriver.log
+*.txt
