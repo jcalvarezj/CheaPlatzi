@@ -59,11 +59,19 @@ def ecommerce_list(request):
 @api_view(['GET', 'POST', 'DELETE'])
 def product_list(request):
     if request.method == 'GET':
-        products = Product.objects.all()
+        products = Product.objects.filter(status=True)
         
         name = request.GET.get('name', None)
+        id_type_product = request.GET.get('id_type_product', None)
+        id_ecommerce = request.GET.get('id_ecommerce', None)
         if name is not None:
             products = products.filter(name__icontains=name)
+
+        if id_type_product is not None:
+            products = products.filter(id_type_product=id_type_product)
+        
+        if id_ecommerce is not None:
+            products = products.filter(id_ecommerce=id_ecommerce)
 
         product_serializer = ProductSerializer(products, many=True)
         return JsonResponse(product_serializer.data, safe=False)

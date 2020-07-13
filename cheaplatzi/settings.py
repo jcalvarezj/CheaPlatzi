@@ -20,8 +20,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = '8e1p3%0^12)&inz!!$p&do-ws=8d+!8zi1w_afa490@=5ve0b&'
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = '8e1p3%0^12)&inz!!$p&do-ws=8d+!8zi1w_afa490@=5ve0b&'
+# SECRET_KEY = os.environ['SECRET_KEY']
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -102,27 +102,27 @@ WSGI_APPLICATION = 'cheaplatzi.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'cheaplatzi',
-#         'USER': 'postgres',
-#         'PASSWORD': 'Ka0b5geFvPD3lylM',
-#         'HOST': '130.211.220.108',
-#         'PORT': '5432',
-#     }
-# }
-
 DATABASES = {
     'default': {
-      'ENGINE': 'django.db.backends.postgresql',
-      'HOST': os.environ['DB_HOST'],
-      'PORT': os.environ['DB_PORT'],
-      'NAME': os.environ['DB_NAME'],
-      'USER': os.environ['DB_USER'],
-      'PASSWORD': os.environ['DB_PASSWORD']
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'cheaplatzi',
+        'USER': 'postgres',
+        'PASSWORD': 'Ka0b5geFvPD3lylM',
+        'HOST': '130.211.220.108',
+        'PORT': '5432',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#       'ENGINE': 'django.db.backends.postgresql',
+#       'HOST': os.environ['DB_HOST'],
+#       'PORT': os.environ['DB_PORT'],
+#       'NAME': os.environ['DB_NAME'],
+#       'USER': os.environ['DB_USER'],
+#       'PASSWORD': os.environ['DB_PASSWORD']
+#     }
+# }
 
 
 # Password validation
@@ -161,6 +161,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-# STATIC_URL = '/static/'
-STATIC_URL = os.environ['STATIC_URL'] # /static/ if DEBUG else Google Cloud bucket url
+STATIC_URL = '/static/'
+# STATIC_URL = os.environ['STATIC_URL'] # /static/ if DEBUG else Google Cloud bucket url
 
