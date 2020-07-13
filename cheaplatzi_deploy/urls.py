@@ -10,5 +10,5 @@ urlpatterns = [
     url(r'^api/ecommerce/active$', views.ecommerce_list_active),
     url(r'^api/product$', views.product_list),
     url(r'^api/product/(?P<pk>[0-9]+)$', views.product_detail),
-    url(r'^api/product/active$', views.product_list_active)
+    url(r'^api/product/active$', views.product_list_active),
 ]
