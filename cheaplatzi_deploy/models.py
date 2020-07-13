@@ -24,7 +24,7 @@ class Product(models.Model):
     id_type_product = models.ForeignKey(ProductType,on_delete=models.CASCADE)
     id_ecommerce= models.ForeignKey(Ecommerce,on_delete=models.CASCADE)
     name = models.CharField(max_length=200,blank=False, default='')
-    description = models.TextField(blank=False, default='')
+    description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.TextField(blank=False, default='')
     url = models.TextField(blank=False, default='')
