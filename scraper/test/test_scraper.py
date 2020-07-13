@@ -14,7 +14,33 @@ from ..utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider
 from ..utils.constants import MercadoLibreConfig as MLC, SearsConfig as SEA
 from ..utils.constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
 from ..utils.constants import GamePlanetConfig as GamePl, MixUpConfig as MUC
-from scrapy.crawler import CrawlerProcess
+from scrapy.crawler import CrawlerRunner
+from multiprocessing import Process, Queue
+from twisted.internet import reactor
+
+
+def _run_spider(spider_cls, urls):
+    """
+    Solution to the multiple Spiders problem when running tests
+    """
+    def inner(queue):
+        try:
+            runner = crawler.CrawlerRunner()
+            deferred = runner.crawl(spider_cls, start_urls = urls)
+            deferred.addBoth(lambda _: reactor.stop())
+            reactor.run()
+            queue.put(None)
+        except Exception as e:
+            queue.put(e)
+
+    queue = Queue()
+    process = Process(target = inner, args = (queue,))
+    process.start()
+    result = queue.get()
+    process.join()
+
+    if result is not None:
+        raise result
 
 
 def _cleanup(created_file_path):
@@ -90,12 +116,13 @@ def _olx_setup():
     """
     Initializes the required conditions for testing on OLX's site
     """
-    fileURIs = [f'file:{OLX.TEST_PATH.value}/{file_name}' for file_name
-                in OLX.TEST_FILES.value]
+    file_URIs = [f'file:{OLX.TEST_PATH.value}/{file_name}' for file_name
+                 in OLX.TEST_FILES.value]
 
-    process = CrawlerProcess()
-    process.crawl(OLXSpider, start_urls = fileURIs)
-    process.start()
+    # process = CrawlerProcess()
+    # process.crawl(OLXSpider, start_urls = fileURIs)
+    # process.start()
+    _run_spider(OLXSpider, file_URIs)
 
 
 def _cgamer_setup():
@@ -103,47 +130,51 @@ def _cgamer_setup():
     Initializes the required conditions for testing on ColombiaGamer's site
     """
     file_URIs = [f'file:{CGamer.TEST_PATH.value}/{file_name}' for file_name 
-                in CGamer.TEST_FILES.value]
+                 in CGamer.TEST_FILES.value]
     
-    process = CrawlerProcess()
-    process.crawl(CGamerSpider, start_urls = file_URIs)
-    process.start()
+    # process = CrawlerProcess()
+    # process.crawl(CGamerSpider, start_urls = file_URIs)
+    # process.start()
+    _run_spider(CGamerSpider, file_URIs)
 
 
 def _gamepl_setup():
     """
     Initializes the required conditions for testing on GamePlanet's site
     """
-    fileURIs = [f'file:{GamePl.TEST_PATH.value}/{file_name}' for file_name 
-                in GamePl.TEST_FILES.value]
+    file_URIs = [f'file:{GamePl.TEST_PATH.value}/{file_name}' for file_name 
+                 in GamePl.TEST_FILES.value]
     
-    process = CrawlerProcess()
-    process.crawl(GamePlSpider, start_urls = fileURIs)
-    process.start()
+    # process = CrawlerProcess()
+    # process.crawl(GamePlSpider, start_urls = fileURIs)
+    # process.start()
+    _run_spider(GamePlSpider, file_URIs)
 
 
 def _mixup_setup():
     """
     Initializes the required conditions for testing on MixUp's site
     """
-    fileURIs = [f'file:{MUC.TEST_PATH.value}/{file_name}' for file_name 
-                in MUC.TEST_FILES.value]
+    file_URIs = [f'file:{MUC.TEST_PATH.value}/{file_name}' for file_name 
+                 in MUC.TEST_FILES.value]
     
-    process = CrawlerProcess()
-    process.crawl(MixUpSpider, start_urls = fileURIs)
-    process.start()
+    # process = CrawlerProcess()
+    # process.crawl(MixUpSpider, start_urls = fileURIs)
+    # process.start()
+    _run_spider(MixUpSpider, file_URIs)
 
 
 def _sears_setup():
     """
     Initializes the required conditions for testing on Sears's site
     """
-    fileURIs = [f'file:{SEA.TEST_PATH.value}/{file_name}' for file_name 
-                in SEA.TEST_FILES.value]
+    file_URIs = [f'file:{SEA.TEST_PATH.value}/{file_name}' for file_name 
+                 in SEA.TEST_FILES.value]
     
-    process = CrawlerProcess()
-    process.crawl(SearSpider, start_urls = fileURIs)
-    process.start()
+    # process = CrawlerProcess()
+    # process.crawl(SearSpider, start_urls = fileURIs)
+    # process.start()
+    _run_spider(SearSpider, file_URIs)
 
 
 def _assert_file_exists_and_matches_expected_value(file_path, expected):
