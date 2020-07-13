@@ -20,12 +20,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'k0rg#yd)b4-h4u3!h4(m=cn+#q26riac3$(3fq^9dj+ml76nxr'
+# SECRET_KEY = '8e1p3%0^12)&inz!!$p&do-ws=8d+!8zi1w_afa490@=5ve0b&'
+SECRET_KEY = os.environ['SECRET_KEY']
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = [
+  # TODO: add your Google Cloud Project-ID here
+    'cheaplatzi.uc.r.appspot.com',# must add the app engine (project-id) domain here
+    '127.0.0.1', # for local testing 
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -62,6 +68,7 @@ CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:8000',
+    'https://cheaplatzi.uc.r.appspot.com'
 )
 
 ROOT_URLCONF = 'cheaplatzi.urls'
@@ -95,14 +102,25 @@ WSGI_APPLICATION = 'cheaplatzi.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'cheaplatzi',
+#         'USER': 'postgres',
+#         'PASSWORD': 'Ka0b5geFvPD3lylM',
+#         'HOST': '130.211.220.108',
+#         'PORT': '5432',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cheaplatzi',
-        'USER': 'postgres',
-        'PASSWORD': 'Ka0b5geFvPD3lylM',
-        'HOST': '130.211.220.108',
-        'PORT': '5432',
+      'ENGINE': 'django.db.backends.postgresql',
+      'HOST': os.environ['DB_HOST'],
+      'PORT': os.environ['DB_PORT'],
+      'NAME': os.environ['DB_NAME'],
+      'USER': os.environ['DB_USER'],
+      'PASSWORD': os.environ['DB_PASSWORD']
     }
 }
 
@@ -143,4 +161,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
+STATIC_URL = os.environ['STATIC_URL'] # /static/ if DEBUG else Google Cloud bucket url
+

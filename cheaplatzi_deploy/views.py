@@ -63,8 +63,8 @@ def product_list(request):
         
         name = request.GET.get('name', None)
         if name is not None:
-            products = Product.filter(name__icontains=name)
-        
+            products = products.filter(name__icontains=name)
+
         product_serializer = ProductSerializer(products, many=True)
         return JsonResponse(product_serializer.data, safe=False)
         # 'safe=False' for objects serialization
