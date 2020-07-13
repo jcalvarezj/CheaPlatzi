@@ -1,6 +1,8 @@
 # CheaPlatzi
 Web application that helps the user compare prices of items among different e-commerce sites, and thus find the cheapest offer.
 
+ * **Website:** https://www.gamecheap.store/
+
 
 ## Requirements
 
@@ -69,3 +71,23 @@ The indexes for the sites are:
 5. MixUp
 
 The optional `verbose` flag enables to see detailed information about the response bodies from the performed requests to the APIs, and `store` enables the scraper to automatically send requests to the backend's database API to store the scraped records.
+
+### Cheaplatzi API
+
+1. Creates new migration(s) for apps. 
+    * `python3 manage.py makemigrations`
+2. Updates database schema. Manages both apps with migrations and those without.
+    * `python3 manage.py migrate`
+3. Starts a lightweight Web server for development and also serves static files.
+    * `python3 manage.py runserver`
+
+#### Enpoints
+
+|METHOD|urls|Actions|
+|--|--|--|
+|POST|api/product|add new product|
+|GET|api/product|get all products|
+|GET|api/product/:id|get product by id|
+|PUT|api/product/:id|Update product by id / Deactivate product by id|
+|GET|api/product/active|find all active products|
+|GET|api/product?name=[kw]?id_type_product=[kw]?id_ecommerce=[kw]|find all product which name, id_type_product, id_ecommerce contains 'kw'|
