@@ -23,11 +23,6 @@ BRAND_IDS = {
     'xbox': 2,
     'playstation': 3
 }
-BRAND_IDS = {
-    'nintendo': 1,
-    'xbox': 2,
-    'playstation': 3
-}
 BACKEND_URL = 'https://cheaplatzi.uc.r.appspot.com/api/product'
 
 
@@ -54,7 +49,8 @@ def _get_test_products(path, site_id, html_desc = False, short_desc = False):
             'image': urllib.parse.quote(f'{PROTOCOL}{path}/switch.jpg',
                                         safe = '/:'),
             'url': urllib.parse.quote(f'{PROTOCOL}{path}/switch_mock.html',
-                                      safe = '/:')
+                                      safe = '/:'),                                      
+            'barcode': 12345
         },
         {
             'id_ecommerce': site_id,
@@ -67,7 +63,8 @@ def _get_test_products(path, site_id, html_desc = False, short_desc = False):
             'image': urllib.parse.quote(f'{PROTOCOL}{path}/play.jpg',
                                         safe = '/:'),
             'url': urllib.parse.quote(f'{PROTOCOL}{path}/playstation_mock.html',
-                                      safe = '/:')
+                                      safe = '/:'),
+            'barcode': 12346
         },
         {
             'id_ecommerce': site_id,
@@ -80,7 +77,8 @@ def _get_test_products(path, site_id, html_desc = False, short_desc = False):
             'image': urllib.parse.quote(f'{PROTOCOL}{path}/xbox.jpg',
                                         safe = '/:'),
             'url': urllib.parse.quote(f'{PROTOCOL}{path}/xbox_mock.html',
-                                      safe = '/:')
+                                      safe = '/:'),
+            'barcode': 12347
         }
     ]
 
