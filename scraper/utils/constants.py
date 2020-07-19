@@ -24,6 +24,13 @@ BRAND_IDS = {
     'playstation': 3
 }
 BACKEND_URL = 'https://cheaplatzi.uc.r.appspot.com/api/product'
+SPIDER_EXPORT = {
+    'format': 'json',
+    'encoding': 'utf-8',
+    'fields': ['id_type_product', 'id_ecommerce', 'name',
+                'description', 'price', 'image', 'url', 'barcode'],
+    'indent': 4
+}
 
 
 def _get_test_products(path, site_id, html_desc = False, short_desc = False):
@@ -264,6 +271,7 @@ class SearsConfig(Enum):
     DESC_CLASS = 'yotpo'
     PRICE_CLASS = 'total'
     IMAGE_CLASS = 'carrusel-producto'
+    ID_CLASS = 'skuMarca'
     TEST_PATH = f'{os.getcwd()}/scraper/test/sears_mocks'
     TEST_FILES = ['sears_mock.html']
     TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['Sears'])

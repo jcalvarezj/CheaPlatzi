@@ -5,15 +5,15 @@ import re
 import time
 import json
 import scrapy
-from selenium import webdriver
-from .constants import SITE_IDS, BRAND_IDS, SearsConfig as SEA
-from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
 from .constants import GamePlanetConfig as GamePl, MixUpConfig as MU
+from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
+from .constants import SITE_IDS, BRAND_IDS, SPIDER_EXPORT, SearsConfig as SEA
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support import expected_conditions as EC
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import StaleElementReferenceException
 
@@ -25,13 +25,7 @@ class OLXSpider(scrapy.Spider):
     name = OLX.SPIDER_NAME.value
     custom_settings = {
         'FEEDS': {
-            OLX.EXPORT_FILE_PATH.value: {
-                'format': 'json',
-                'encoding': 'utf-8',
-                'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url', 'barcode'],
-                'indent': 4
-            }
+            OLX.EXPORT_FILE_PATH.value: SPIDER_EXPORT
         },
         'FEED_EXPORT_ENCODING': 'utf-8',
         'DEPTH_LIMIT': 1,
@@ -168,13 +162,7 @@ class ColombiaGamerSpider(scrapy.Spider):
     name = CGamer.SPIDER_NAME.value
     custom_settings = {
         'FEEDS': {
-            CGamer.EXPORT_FILE_PATH.value: {
-                'format': 'json',
-                'encoding': 'utf-8',
-                'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url', 'barcode'],
-                'indent': 4
-            }
+            CGamer.EXPORT_FILE_PATH.value: SPIDER_EXPORT
         },
         'FEED_EXPORT_ENCODING': 'utf-8',
         'AUTOTHROTTLE_ENABLED': True
@@ -263,13 +251,7 @@ class GamePlSpider(scrapy.Spider):
     name = GamePl.SPIDER_NAME.value
     custom_settings = {
         'FEEDS': {
-            GamePl.EXPORT_FILE_PATH.value: {
-                'format': 'json',
-                'encoding': 'utf-8',
-                'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url', 'barcode'],
-                'indent': 4
-            }
+            GamePl.EXPORT_FILE_PATH.value: SPIDER_EXPORT
         },
         "FEED_EXPORT_ENCODING": "utf-8",
         'AUTOTHROTTLE_ENABLED': True
@@ -380,13 +362,7 @@ class SearSpider(scrapy.Spider):
     name = SEA.SPIDER_NAME.value
     custom_settings = {
         'FEEDS': {
-            SEA.EXPORT_FILE_PATH.value: {
-                'format': 'json',
-                'encoding': 'utf-8',
-                'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url'],
-                'indent': 4
-            }
+            SEA.EXPORT_FILE_PATH.value: SPIDER_EXPORT
         },
         'FEED_EXPORT_ENCODING': 'utf-8',
         'AUTOTHROTTLE_ENABLED': True
@@ -423,6 +399,10 @@ class SearSpider(scrapy.Spider):
         if "playstation" in tag_product.lower():
             id_type_product = 3
 
+        barcode_xp = f'//div[@class="{SEA.ID_CLASS.value}"]/div[@class="right"]//span/text()'
+        barcode = response.xpath(barcode_xp).get()
+        self.log(f'>>>>>>>>>>>>>>>>>>>>>>>\n{barcode}\n<<<<<<<<<<<<<<<<<<<<<<<<<')
+
         yield {
             'name': name,
             'description': description,
@@ -430,7 +410,8 @@ class SearSpider(scrapy.Spider):
             'id_type_product': id_type_product,
             'price': price,
             'image': image,
-            'url': response.url
+            'url': response.url,
+            'barcode': int(barcode)
         }
 
 
@@ -463,13 +444,7 @@ class MixUpSpider(scrapy.Spider):
     name = MU.SPIDER_NAME.value
     custom_settings = {
         'FEEDS': {
-            MU.EXPORT_FILE_PATH.value: {
-                'format': 'json',
-                'encoding': 'utf-8',
-                'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url', 'barcode'],
-                'indent': 4
-            }
+            MU.EXPORT_FILE_PATH.value: SPIDER_EXPORT
         },
         'FEED_EXPORT_ENCODING': 'utf-8',
         'AUTOTHROTTLE_ENABLED': True
