@@ -267,7 +267,7 @@ class GamePlSpider(scrapy.Spider):
                 'format': 'json',
                 'encoding': 'utf-8',
                 'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url'],
+                           'description', 'price', 'image', 'url', 'barcode'],
                 'indent': 4
             }
         },
@@ -339,15 +339,19 @@ class GamePlSpider(scrapy.Spider):
             id_type_product = 2
         if "playstation" in tag_product.lower():
             id_type_product = 3
+        
+        barcode_xp = f'//input[@name="{GamePl.ID_CLASS.value}"]'
+        barcode = self.driver.find_element_by_xpath(barcode_xp).get_attribute('value')
 
-        yield{
+        yield {
             'name': name,
             'description': description,
             'id_ecommerce': SITE_IDS['GamePlanet'],
             'id_type_product': id_type_product,
             'price': price,
             'image': image,
-            'url': response.url
+            'url': response.url,
+            'barcode': int(barcode)
         }
 
 
@@ -356,7 +360,6 @@ class GamePlSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
-
         self.driver.get(response.url)
         next_xp = (f'//a[@title = "Next"]')
         next_page = self.driver.find_elements_by_xpath(next_xp)
@@ -486,6 +489,10 @@ class MixUpSpider(scrapy.Spider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
+        """
+        This method connects the Spider with a termination signal in order to
+        automatically execute operations when the Spider closes
+        """
         spider = super(MixUpSpider, cls).from_crawler(crawler, *args, **kwargs)
         crawler.signals.connect(spider.spider_closed,
                                 signal = scrapy.signals.spider_closed)
@@ -493,7 +500,12 @@ class MixUpSpider(scrapy.Spider):
 
 
     def spider_closed(self, spider):
+        """
+        Function that is called in the moment of Spider termination. The Spider
+        calls it's Selenium driver quit method
+        """
         spider.driver.quit()
+
 
     def parse_product(self, response):
         """

@@ -7,7 +7,6 @@ import json
 import pytest
 import requests
 import responses
-import urllib.parse
 from ..utils import apis
 from ..utils.commons import get_uri
 from ..utils.spiders import GamePlSpider, MixUpSpider, SearSpider
@@ -113,7 +112,7 @@ def _gamepl_setup():
     """
     Initializes the required conditions for testing on GamePlanet's site
     """
-    fileURIs = [f'file:{GamePl.TEST_PATH.value}/{file_name}' for file_name 
+    fileURIs = [f'{get_uri(GamePl.TEST_PATH.value)}/{file_name}' for file_name 
                 in GamePl.TEST_FILES.value]
     
     process = CrawlerProcess()
@@ -125,7 +124,7 @@ def _mixup_setup():
     """
     Initializes the required conditions for testing on MixUp's site
     """
-    fileURIs = [f'file:{MUC.TEST_PATH.value}/{file_name}' for file_name 
+    fileURIs = [f'{get_uri(MUC.TEST_PATH.value)}/{file_name}' for file_name 
                 in MUC.TEST_FILES.value]
     
     process = CrawlerProcess()
@@ -137,7 +136,7 @@ def _sears_setup():
     """
     Initializes the required conditions for testing on Sears's site
     """
-    fileURIs = [f'file:{SEA.TEST_PATH.value}/{file_name}' for file_name 
+    fileURIs = [f'{get_uri(SEA.TEST_PATH.value)}/{file_name}' for file_name 
                 in SEA.TEST_FILES.value]
     
     process = CrawlerProcess()

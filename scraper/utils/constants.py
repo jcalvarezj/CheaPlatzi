@@ -3,9 +3,9 @@ This module holds the scraper's configuration constants
 """
 import os
 import sys
-import urllib.parse
 from enum import Enum
 from .commons import get_uri
+
 
 HEADERS = {
     'Content-Type': 'application/json'
@@ -153,7 +153,7 @@ class OLXConfig(Enum):
         f'{BASE_URL}/q-switch'
     ]
     SPIDER_NAME = 'olxspider'
-    DRIVER_TIMEOUT = 3#0
+    DRIVER_TIMEOUT = 30
     DELAY_IN_SECS = 3
     BTN_CLASS = 'btnLoadMore'
     ITEM_CLASS = 'itemBox'
@@ -214,6 +214,7 @@ class GamePlanetConfig(Enum):
     TITLE_CLASS = 'h1title'
     DESC_CLASS = 'std'
     PRICE_CLASS = 'domicilio-price'
+    ID_CLASS = 'sku'
     IMAGE_ID = 'main_image'
     TAG_CLASS = 'plataforma-text'
     TEST_PATH = f'{os.getcwd()}/scraper/test/gameplanet_mocks'
