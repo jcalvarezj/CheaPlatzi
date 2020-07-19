@@ -144,7 +144,7 @@ def _scrap_mercadolibre_product_pages(product_responses, brand_id, verbose):
                     try:
                         description = description_responses[0].json()['plain_text']
                     except Exception:
-                        pass
+                        print('Problem retrieving the product\'s description')
 
                 image = ''
                 barcode = ''
@@ -153,7 +153,7 @@ def _scrap_mercadolibre_product_pages(product_responses, brand_id, verbose):
                         image = img_responses[0].json()['pictures'][0]['secure_url']
                         barcode = img_responses[0].json()['id'].replace('MCO', '')
                     except Exception:
-                        pass
+                        print('Problem retrieving the product\'s details')
 
                 records.append({
                     'id_ecommerce': SITE_IDS['MercadoLibre'],
