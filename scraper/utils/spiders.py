@@ -467,7 +467,7 @@ class MixUpSpider(scrapy.Spider):
                 'format': 'json',
                 'encoding': 'utf-8',
                 'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url'],
+                           'description', 'price', 'image', 'url', 'barcode'],
                 'indent': 4
             }
         },
@@ -524,7 +524,7 @@ class MixUpSpider(scrapy.Spider):
         price_xp = f'//span[contains(@class, "{MU.PRICE_CLASS.value}")]/text()'
         price = response.xpath(price_xp)[1].get()
         price = price.strip()         
-        price = int(float(price.replace("$","").replace(",","").replace(".",""))) 
+        price = int(float(price.replace("$", "").replace(",", "").replace(".", "")))
 
         image_xp = (f'//img[@id="{MU.IMAGE_ID.value}"]/@src')
         image = response.urljoin(response.xpath(image_xp).get())
@@ -541,6 +541,15 @@ class MixUpSpider(scrapy.Spider):
         if "playstation" in tag_product.lower():
             id_type_product = 3
         
+        barcode_xp = f'//div[@class="{MU.DETAIL_CLASS.value}"]'
+        barcode_content = response.xpath(barcode_xp).get()
+        barcode = 0
+
+        try:
+            barcode = re.search('\d{5,}', barcode_content)[0]
+        except:
+            print(f'No barcode found for {name}')
+
         yield {
             'name': name,
             'description': description,
@@ -548,7 +557,8 @@ class MixUpSpider(scrapy.Spider):
             'id_ecommerce': SITE_IDS['MixUp'],
             'price': price,
             'image': image,
-            'url': response.url
+            'url': response.url,
+            'barcode': int(barcode)
         }
 
 

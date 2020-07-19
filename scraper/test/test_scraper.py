@@ -101,7 +101,7 @@ def _cgamer_setup():
     Initializes the required conditions for testing on ColombiaGamer's site
     """
     file_URIs = [f'{get_uri(CGamer.TEST_PATH.value)}/{file_name}' for file_name 
-                in CGamer.TEST_FILES.value]
+                 in CGamer.TEST_FILES.value]
     
     process = CrawlerProcess()
     process.crawl(CGamerSpider, start_urls = file_URIs)

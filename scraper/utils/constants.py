@@ -240,6 +240,7 @@ class MixUpConfig(Enum):
     TITLE_CLASS = 'megatitulo'
     DESC_CLASS = 'resenia'
     PRICE_CLASS = 'preciolista'
+    DETAIL_CLASS = 'detail'
     IMAGE_ID = 'imgProd'
     TEST_PATH = f'{os.getcwd()}/scraper/test/mixup_mocks'
     TEST_FILES = ['mixup_mock.html']
