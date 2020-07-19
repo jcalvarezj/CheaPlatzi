@@ -308,7 +308,8 @@ class GamePlSpider(scrapy.Spider):
 
         price_xp = f'//div[contains(@class, "{GamePl.PRICE_CLASS.value}")]//span'
         price = self.driver.find_elements_by_xpath(price_xp)[0].get_attribute('innerText')
-        price = int(float(price.replace("$","").replace(",","").replace(".","")))
+        price = re.sub(r'\.00$', "", price)
+        price = int(price.replace("$","").replace(",","").replace(".",""))
 
         image_xp = (f'//img[@id = "{GamePl.IMAGE_ID.value}"]')
         image_url = self.driver.find_elements_by_xpath(image_xp)[0].get_attribute('src')
@@ -386,7 +387,8 @@ class SearSpider(scrapy.Spider):
 
         price_xp = f'//p[@class = "{SEA.PRICE_CLASS.value}"]/text()'
         price = response.xpath(price_xp).get()
-        price = int(float(price.replace("$","").replace(",","").replace(".","")))
+        price = re.sub(r'\.00$', "", price)
+        price = int(price.replace("$","").replace(",","").replace(".",""))
 
         image_xp = (f'//ul[contains(@class,{SEA.IMAGE_CLASS.value})]/li/img/@src')
         image = response.urljoin(response.xpath(image_xp)[0].get())
@@ -500,8 +502,9 @@ class MixUpSpider(scrapy.Spider):
 
         price_xp = f'//span[contains(@class, "{MU.PRICE_CLASS.value}")]/text()'
         price = response.xpath(price_xp)[1].get()
-        price = price.strip()         
-        price = int(float(price.replace("$", "").replace(",", "").replace(".", "")))
+        price = price.strip()
+        price = re.sub(r'\.00$', "", price)
+        price = int(price.replace("$","").replace(",","").replace(".",""))
 
         image_xp = (f'//img[@id="{MU.IMAGE_ID.value}"]/@src')
         image = response.urljoin(response.xpath(image_xp).get())
