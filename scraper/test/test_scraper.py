@@ -9,6 +9,7 @@ import requests
 import responses
 import urllib.parse
 from ..utils import apis
+from ..utils.commons import get_uri
 from ..utils.spiders import GamePlSpider, MixUpSpider, SearSpider
 from ..utils.spiders import OLXSpider, ColombiaGamerSpider as CGamerSpider
 from ..utils.constants import MercadoLibreConfig as MLC, SearsConfig as SEA
@@ -36,10 +37,8 @@ def _generate_mock_response_file(base_file_URIs, is_index = True):
     for file_URI in base_file_URIs:
         with open(file_URI, encoding = 'utf-8') as json_file:
             data = json.load(json_file)
-            path = MLC.TEST_PATH.value
-            PROTOCOL = 'file:///' if sys.platform.startswith('win') \
-                       else 'file://'
-            base_URI = urllib.parse.quote(f'{PROTOCOL}{path}', safe = '/:')
+            path = MLC.TEST_PATH.value            
+            base_URI = get_uri(path)
 
             if not is_index:
                 current_image = data['pictures'][0]['secure_url']
@@ -90,7 +89,7 @@ def _olx_setup():
     """
     Initializes the required conditions for testing on OLX's site
     """
-    fileURIs = [f'file:{OLX.TEST_PATH.value}/{file_name}' for file_name
+    fileURIs = [f'{get_uri(OLX.TEST_PATH.value)}/{file_name}' for file_name
                 in OLX.TEST_FILES.value]
 
     process = CrawlerProcess()

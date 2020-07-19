@@ -1,6 +1,7 @@
 """
 This module contains all the scrapy spiders for the scraper module
 """
+import re
 import time
 import scrapy
 from selenium import webdriver
@@ -27,7 +28,7 @@ class OLXSpider(scrapy.Spider):
                 'format': 'json',
                 'encoding': 'utf-8',
                 'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url'],
+                           'description', 'price', 'image', 'url', 'barcode'],
                 'indent': 4
             }
         },
@@ -36,15 +37,17 @@ class OLXSpider(scrapy.Spider):
         'AUTOTHROTTLE_ENABLED': True
     }
 
+
     def __init__(self, *args, **kwargs):
         """
         Constructor that initializes the Spider instance and sets it up
         """
         super().__init__(*args, **kwargs)
         chrome_options = Options()  
-        chrome_options.add_argument("--headless")
+        #chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),
-        chrome_options=chrome_options)
+                                       chrome_options = chrome_options)
+
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -92,6 +95,15 @@ class OLXSpider(scrapy.Spider):
                     'img/@src')
         image = response.urljoin(response.xpath(image_xp).get())
 
+        barcode_xp = f'//div[@class="{OLX.ID_CLASS.value}"]'
+        barcode_content = response.xpath(barcode_xp).get()
+        barcode = 0
+
+        try:
+            barcode = re.search('\d{4,}', barcode_content)[0]
+        except:
+            print(f'No barcode found for {name}')
+
         yield {
             'id_type_product': response.meta['brand'],
             'id_ecommerce': SITE_IDS['OLX'],
@@ -99,7 +111,8 @@ class OLXSpider(scrapy.Spider):
             'description': description,
             'price': price,
             'image': image,
-            'url': response.url
+            'url': response.url,
+            'barcode': int(barcode)
         }
 
 
@@ -111,6 +124,7 @@ class OLXSpider(scrapy.Spider):
         self.driver.get(response.url)
 
         button_xp = f'//button[@data-aut-id="{OLX.BTN_CLASS.value}"]'
+        button = None
 
         try:
             WebDriverWait(self.driver, OLX.DRIVER_TIMEOUT.value).until(
@@ -121,7 +135,6 @@ class OLXSpider(scrapy.Spider):
             self.log('The page took too long to load. Reached timeout.')
             button = False
         
-
         while button:
             try:
                 button.click()
@@ -209,7 +222,6 @@ class ColombiaGamerSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
-
         list_items = response.xpath('//nav[@role="pagination"]//li/@class')
         page_buttons_xp = '//nav[@role="pagination"]//a/@href'
         page_buttons = response.xpath(page_buttons_xp).getall()
@@ -266,7 +278,7 @@ class GamePlSpider(scrapy.Spider):
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),
-        chrome_options=chrome_options)
+                                       chrome_options = chrome_options)
 
 
     @classmethod
@@ -463,7 +475,7 @@ class MixUpSpider(scrapy.Spider):
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),
-        chrome_options=chrome_options)
+                                       chrome_options = chrome_options)
 
 
     @classmethod
