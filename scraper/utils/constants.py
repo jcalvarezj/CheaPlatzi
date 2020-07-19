@@ -248,6 +248,7 @@ class MixUpConfig(Enum):
     DESC_CLASS = 'resenia'
     PRICE_CLASS = 'preciolista'
     DETAIL_CLASS = 'detail'
+    BARCODE_ID = 'ctl00$container$hfSKU'
     IMAGE_ID = 'imgProd'
     TEST_PATH = f'{os.getcwd()}/scraper/test/mixup_mocks'
     TEST_FILES = ['mixup_mock.html']
@@ -271,7 +272,7 @@ class SearsConfig(Enum):
     DESC_CLASS = 'yotpo'
     PRICE_CLASS = 'total'
     IMAGE_CLASS = 'carrusel-producto'
-    ID_CLASS = 'skuMarca'
+    ID_PROP = '@data-flix-inpage'
     TEST_PATH = f'{os.getcwd()}/scraper/test/sears_mocks'
     TEST_FILES = ['sears_mock.html']
     TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['Sears'])

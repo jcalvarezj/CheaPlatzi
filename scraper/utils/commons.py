@@ -14,3 +14,17 @@ def get_uri(path):
         return f'file:///{urllib.parse.quote(base, safe = ":/")}'
     else:
         return f'file://{urllib.parse.quote(path, safe = ":/")}'
+
+def validate_sku(sku):
+    """
+    Validates if SKU has 12 digits, if nots deletes first digit which is
+    the most common digit to be added within the ecommerce
+    The input should be string and the output is an integer
+    """
+
+    if (len(sku) > 12):
+        cleaned_sku = sku[1:]
+    else:
+        cleaned_sku = sku
+    
+    return int(cleaned_sku)

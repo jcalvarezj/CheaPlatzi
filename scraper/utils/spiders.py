@@ -5,6 +5,7 @@ import re
 import time
 import json
 import scrapy
+from ..utils.commons import validate_sku
 from .constants import GamePlanetConfig as GamePl, MixUpConfig as MU
 from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
 from .constants import SITE_IDS, BRAND_IDS, SPIDER_EXPORT, SearsConfig as SEA
@@ -324,6 +325,7 @@ class GamePlSpider(scrapy.Spider):
         
         barcode_xp = f'//input[@name="{GamePl.ID_CLASS.value}"]'
         barcode = self.driver.find_element_by_xpath(barcode_xp).get_attribute('value')
+        barcode = validate_sku(barcode)
 
         yield {
             'name': name,
@@ -333,7 +335,7 @@ class GamePlSpider(scrapy.Spider):
             'price': price,
             'image': image,
             'url': response.url,
-            'barcode': int(barcode)
+            'barcode': barcode
         }
 
 
@@ -399,9 +401,9 @@ class SearSpider(scrapy.Spider):
         if "playstation" in tag_product.lower():
             id_type_product = 3
 
-        barcode_xp = f'//div[@class="{SEA.ID_CLASS.value}"]/div[@class="right"]//span/text()'
-        barcode = response.xpath(barcode_xp).get()
-        self.log(f'>>>>>>>>>>>>>>>>>>>>>>>\n{barcode}\n<<<<<<<<<<<<<<<<<<<<<<<<<')
+        barcode_xp = f'//script[{SEA.ID_PROP.value}]/@data-flix-ean'
+        barcode_content = response.xpath(barcode_xp).get()
+        barcode = validate_sku(barcode_content)
 
         yield {
             'name': name,
@@ -411,7 +413,7 @@ class SearSpider(scrapy.Spider):
             'price': price,
             'image': image,
             'url': response.url,
-            'barcode': int(barcode)
+            'barcode': barcode
         }
 
 
@@ -516,14 +518,9 @@ class MixUpSpider(scrapy.Spider):
         if "playstation" in tag_product.lower():
             id_type_product = 3
         
-        barcode_xp = f'//div[@class="{MU.DETAIL_CLASS.value}"]'
+        barcode_xp = f'//input[@name="{MU.BARCODE_ID.value}"]/@value'
         barcode_content = response.xpath(barcode_xp).get()
-        barcode = 0
-
-        try:
-            barcode = re.search('\d{5,}', barcode_content)[0]
-        except:
-            print(f'No barcode found for {name}')
+        barcode = validate_sku(barcode_content)
 
         yield {
             'name': name,
@@ -533,7 +530,7 @@ class MixUpSpider(scrapy.Spider):
             'price': price,
             'image': image,
             'url': response.url,
-            'barcode': int(barcode)
+            'barcode': barcode
         }
 
 
