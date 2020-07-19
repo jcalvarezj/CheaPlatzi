@@ -9,7 +9,6 @@
 
 <body>
     <div class="product-container productdetails-view productdetails">
-
         <div class="vm-product-wrap row">
             <div class="vm-product-media-img col-sm-5">
                 <div class="main-image">
@@ -126,6 +125,31 @@
             </div>
         </div>        
     </div>
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org/",
+        "@type": "Product",
+        "name": "Nintendo Switch",
+        "description": "Ultima consola de Nintendo. Con controles extra.",
+        "brand": {
+            "@type": "Thing",
+            "name": "Nintendo"
+        },
+        "productID": "12345",
+        "sku": "12345",
+        "image": [
+            "urlToImage"  
+        ],
+        "offers": {
+            "@type": "Offer",
+            "priceCurrency": "COP",
+            "availability": "InStock",
+            "price": "1.000.000",
+            "url": "productUrl",
+            "itemCondition": "New"
+        }
+    }
+    </script>
 </body>
 
 </html>

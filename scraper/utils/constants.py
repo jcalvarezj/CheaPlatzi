@@ -181,6 +181,7 @@ class ColombiaGamerConfig(Enum):
     EXPORT_FILE_PATH = 'export/cgamer_items.json'
     ITEM_CLASS = 'product-container'
     IMG_CLASS = 'main-image'
+    ID_CLASS = 'application/ld+json'
     TITLE_CLASS = 'vm-product-title'
     PRICE_CLASS = 'PricesalesPrice'
     SHORT_DESC_CLASS = 'product-short-description'

@@ -3,6 +3,7 @@ This module contains all the scrapy spiders for the scraper module
 """
 import re
 import time
+import json
 import scrapy
 from selenium import webdriver
 from .constants import SITE_IDS, BRAND_IDS, SearsConfig as SEA
@@ -44,7 +45,7 @@ class OLXSpider(scrapy.Spider):
         """
         super().__init__(*args, **kwargs)
         chrome_options = Options()  
-        #chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),
                                        chrome_options = chrome_options)
 
@@ -171,7 +172,7 @@ class ColombiaGamerSpider(scrapy.Spider):
                 'format': 'json',
                 'encoding': 'utf-8',
                 'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url'],
+                           'description', 'price', 'image', 'url', 'barcode'],
                 'indent': 4
             }
         },
@@ -206,6 +207,10 @@ class ColombiaGamerSpider(scrapy.Spider):
         image_xp = (f'//div[@class="{CGamer.IMG_CLASS.value}"]//img/@src')
         image = response.urljoin(response.xpath(image_xp).get())
 
+        barcode_xp = f'//script[@type="{CGamer.ID_CLASS.value}"]/text()'
+        barcode_content = response.xpath(barcode_xp).get()
+        barcode = json.loads(barcode_content)['sku']
+
         yield {
             'id_type_product': response.meta['brand'],
             'id_ecommerce': SITE_IDS['ColombiaGamer'],
@@ -213,7 +218,8 @@ class ColombiaGamerSpider(scrapy.Spider):
             'description': description,
             'price': price,
             'image': image,
-            'url': response.url
+            'url': response.url,
+            'barcode': int(barcode)
         }
 
 
