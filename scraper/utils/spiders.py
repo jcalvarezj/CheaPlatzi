@@ -36,6 +36,7 @@ class OLXSpider(scrapy.Spider):
         'AUTOTHROTTLE_ENABLED': True
     }
 
+
     def __init__(self, *args, **kwargs):
         """
         Constructor that initializes the Spider instance and sets it up
@@ -44,7 +45,8 @@ class OLXSpider(scrapy.Spider):
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),
-        chrome_options=chrome_options)
+                                       chrome_options = chrome_options)
+
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -90,7 +92,7 @@ class OLXSpider(scrapy.Spider):
 
         image_xp = (f'//div[contains(@class, "{OLX.IMG_DIV_CLASS.value}")]//'
                     'img/@src')
-        image = response.urljoin(response.xpath(image_xp).get())
+        image = response.urljoin(response.xpath(image_xp).get())        
 
         yield {
             'id_type_product': response.meta['brand'],
@@ -99,7 +101,8 @@ class OLXSpider(scrapy.Spider):
             'description': description,
             'price': price,
             'image': image,
-            'url': response.url
+            'url': response.url,
+            'barcode': response.url.split('-')[-1].replace('.html', '')
         }
 
 
@@ -120,7 +123,6 @@ class OLXSpider(scrapy.Spider):
         except TimeoutException:
             self.log('The page took too long to load. Reached timeout.')
             button = False
-        
 
         while button:
             try:
@@ -266,7 +268,7 @@ class GamePlSpider(scrapy.Spider):
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),
-        chrome_options=chrome_options)
+                                       chrome_options = chrome_options)
 
 
     @classmethod
@@ -338,7 +340,6 @@ class GamePlSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
-
         self.driver.get(response.url)
         next_xp = (f'//a[@title = "Next"]')
         next_page = self.driver.find_elements_by_xpath(next_xp)
@@ -476,6 +477,7 @@ class MixUpSpider(scrapy.Spider):
 
     def spider_closed(self, spider):
         spider.driver.quit()
+
 
     def parse_product(self, response):
         """

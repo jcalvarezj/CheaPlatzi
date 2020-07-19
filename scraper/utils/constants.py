@@ -169,8 +169,11 @@ class OLXConfig(Enum):
     LEFT_SECT_CLASS = 'CBG3S'
     IMG_DIV_CLASS = 'slick-active'
     TEST_PATH = f'{os.getcwd()}/scraper/test/olx_mocks'
-    TEST_FILES = ['olx_switch_mock.html', 'olx_playstation_mock.html',
-                  'olx_xbox_mock.html']
+    TEST_FILES = [
+        'olx_switch_mock-12345.html',
+        'olx_playstation_mock12346.html',
+        'olx_xbox_mock12347.html'
+    ]
     TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['OLX'])
 
 
