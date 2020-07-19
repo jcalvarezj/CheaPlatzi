@@ -3,8 +3,8 @@ This module holds the scraper's configuration constants
 """
 import os
 import sys
-import urllib.parse
 from enum import Enum
+from .commons import get_uri
 
 
 HEADERS = {
@@ -23,20 +23,21 @@ BRAND_IDS = {
     'xbox': 2,
     'playstation': 3
 }
-BRAND_IDS = {
-    'nintendo': 1,
-    'xbox': 2,
-    'playstation': 3
-}
 BACKEND_URL = 'https://cheaplatzi.uc.r.appspot.com/api/product'
+SPIDER_EXPORT = {
+    'format': 'json',
+    'encoding': 'utf-8',
+    'fields': ['id_type_product', 'id_ecommerce', 'name',
+                'description', 'price', 'image', 'url', 'barcode'],
+    'indent': 4
+}
 
 
 def _get_test_products(path, site_id, html_desc = False, short_desc = False):
     """
     Creates a list of test products with the specified test path. The html_desc
     parameter indicates whether the expected description is plain text or HTML
-    """
-    PROTOCOL = 'file:///' if sys.platform.startswith('win') else 'file://'
+    """    
     EXPECTED_DESCS = [
         'Ultima consola de Nintendo. Con controles extra.',
         'Completamente nuevo. Color blanco. 33 juegos.',
@@ -51,10 +52,9 @@ def _get_test_products(path, site_id, html_desc = False, short_desc = False):
                            else f'<p>{EXPECTED_DESCS[0]}</p>' if not short_desc
                                else f'<p>Short</p>\n<p>{EXPECTED_DESCS[0]}</p>',
             'price': 1000000,
-            'image': urllib.parse.quote(f'{PROTOCOL}{path}/switch.jpg',
-                                        safe = '/:'),
-            'url': urllib.parse.quote(f'{PROTOCOL}{path}/switch_mock.html',
-                                      safe = '/:')
+            'image': f'{get_uri(path)}/switch.jpg',
+            'url': f'{get_uri(path)}/switch_mock.html',
+            'barcode': 12345
         },
         {
             'id_ecommerce': site_id,
@@ -64,10 +64,9 @@ def _get_test_products(path, site_id, html_desc = False, short_desc = False):
                            else f'<p>{EXPECTED_DESCS[1]}</p>' if not short_desc
                                else f'<p>Short</p>\n<p>{EXPECTED_DESCS[1]}</p>',
             'price': 1350000,
-            'image': urllib.parse.quote(f'{PROTOCOL}{path}/play.jpg',
-                                        safe = '/:'),
-            'url': urllib.parse.quote(f'{PROTOCOL}{path}/playstation_mock.html',
-                                      safe = '/:')
+            'image': f'{get_uri(path)}/play.jpg',
+            'url': f'{get_uri(path)}/playstation_mock.html',
+            'barcode': 12346
         },
         {
             'id_ecommerce': site_id,
@@ -77,10 +76,9 @@ def _get_test_products(path, site_id, html_desc = False, short_desc = False):
                            else f'<p>{EXPECTED_DESCS[2]}</p>' if not short_desc
                                else f'<p>Short</p>\n<p>{EXPECTED_DESCS[2]}</p>',
             'price': 1550000,
-            'image': urllib.parse.quote(f'{PROTOCOL}{path}/xbox.jpg',
-                                        safe = '/:'),
-            'url': urllib.parse.quote(f'{PROTOCOL}{path}/xbox_mock.html',
-                                      safe = '/:')
+            'image': f'{get_uri(path)}/xbox.jpg',
+            'url': f'{get_uri(path)}/xbox_mock.html',
+            'barcode': 12347
         }
     ]
 
@@ -169,6 +167,7 @@ class OLXConfig(Enum):
     EXPORT_FILE_PATH = 'export/olx_items.json'
     RIGHT_SECT_CLASS = '_2wMiF'
     LEFT_SECT_CLASS = 'CBG3S'
+    ID_CLASS = 'fr4Cy'
     IMG_DIV_CLASS = 'slick-active'
     TEST_PATH = f'{os.getcwd()}/scraper/test/olx_mocks'
     TEST_FILES = ['olx_switch_mock.html', 'olx_playstation_mock.html',
@@ -189,6 +188,7 @@ class ColombiaGamerConfig(Enum):
     EXPORT_FILE_PATH = 'export/cgamer_items.json'
     ITEM_CLASS = 'product-container'
     IMG_CLASS = 'main-image'
+    ID_CLASS = 'application/ld+json'
     TITLE_CLASS = 'vm-product-title'
     PRICE_CLASS = 'PricesalesPrice'
     SHORT_DESC_CLASS = 'product-short-description'
@@ -221,6 +221,7 @@ class GamePlanetConfig(Enum):
     TITLE_CLASS = 'h1title'
     DESC_CLASS = 'std'
     PRICE_CLASS = 'domicilio-price'
+    ID_CLASS = 'sku'
     IMAGE_ID = 'main_image'
     TAG_CLASS = 'plataforma-text'
     TEST_PATH = f'{os.getcwd()}/scraper/test/gameplanet_mocks'
@@ -246,6 +247,7 @@ class MixUpConfig(Enum):
     TITLE_CLASS = 'megatitulo'
     DESC_CLASS = 'resenia'
     PRICE_CLASS = 'preciolista'
+    DETAIL_CLASS = 'detail'
     IMAGE_ID = 'imgProd'
     TEST_PATH = f'{os.getcwd()}/scraper/test/mixup_mocks'
     TEST_FILES = ['mixup_mock.html']
@@ -269,6 +271,7 @@ class SearsConfig(Enum):
     DESC_CLASS = 'yotpo'
     PRICE_CLASS = 'total'
     IMAGE_CLASS = 'carrusel-producto'
+    ID_CLASS = 'skuMarca'
     TEST_PATH = f'{os.getcwd()}/scraper/test/sears_mocks'
     TEST_FILES = ['sears_mock.html']
     TEST_PRODUCTS = _get_test_products(TEST_PATH, SITE_IDS['Sears'])

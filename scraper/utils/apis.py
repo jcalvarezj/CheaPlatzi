@@ -139,19 +139,21 @@ def _scrap_mercadolibre_product_pages(product_responses, brand_id, verbose):
 
                 time.sleep(MLC.DELAY_IN_SECS.value)
 
-                description = ""
+                description = ''
                 if description_responses:
                     try:
                         description = description_responses[0].json()['plain_text']
                     except Exception:
-                        description = "{PROBLEM OBTAINING THIS ITEM'S DESCRIPTION}"
+                        print('Problem retrieving the product\'s description')
 
-                image = ""
+                image = ''
+                barcode = ''
                 if img_responses:
                     try:
                         image = img_responses[0].json()['pictures'][0]['secure_url']
+                        barcode = img_responses[0].json()['id'].replace('MCO', '')
                     except Exception:
-                        image = "{PROBLEM OBTAINING THIS ITEM'S IMAGE URL}"
+                        print('Problem retrieving the product\'s details')
 
                 records.append({
                     'id_ecommerce': SITE_IDS['MercadoLibre'],
@@ -160,7 +162,8 @@ def _scrap_mercadolibre_product_pages(product_responses, brand_id, verbose):
                     'description': description,
                     'price': product['price'],
                     'image': image,
-                    'url': product['permalink']
+                    'url': product['permalink'],
+                    'barcode': int(barcode)
                 })
 
                 time.sleep(MLC.DELAY_IN_SECS.value)

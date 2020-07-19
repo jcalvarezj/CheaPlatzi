@@ -1,17 +1,19 @@
 """
 This module contains all the scrapy spiders for the scraper module
 """
+import re
 import time
+import json
 import scrapy
-from selenium import webdriver
-from .constants import SITE_IDS, BRAND_IDS, SearsConfig as SEA
-from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
 from .constants import GamePlanetConfig as GamePl, MixUpConfig as MU
+from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
+from .constants import SITE_IDS, BRAND_IDS, SPIDER_EXPORT, SearsConfig as SEA
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support import expected_conditions as EC
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import StaleElementReferenceException
 
@@ -23,18 +25,13 @@ class OLXSpider(scrapy.Spider):
     name = OLX.SPIDER_NAME.value
     custom_settings = {
         'FEEDS': {
-            OLX.EXPORT_FILE_PATH.value: {
-                'format': 'json',
-                'encoding': 'utf-8',
-                'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url'],
-                'indent': 4
-            }
+            OLX.EXPORT_FILE_PATH.value: SPIDER_EXPORT
         },
         'FEED_EXPORT_ENCODING': 'utf-8',
         'DEPTH_LIMIT': 1,
         'AUTOTHROTTLE_ENABLED': True
     }
+
 
     def __init__(self, *args, **kwargs):
         """
@@ -44,7 +41,8 @@ class OLXSpider(scrapy.Spider):
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),
-        chrome_options=chrome_options)
+                                       chrome_options = chrome_options)
+
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -92,6 +90,15 @@ class OLXSpider(scrapy.Spider):
                     'img/@src')
         image = response.urljoin(response.xpath(image_xp).get())
 
+        barcode_xp = f'//div[@class="{OLX.ID_CLASS.value}"]'
+        barcode_content = response.xpath(barcode_xp).get()
+        barcode = 0
+
+        try:
+            barcode = re.search('\d{4,}', barcode_content)[0]
+        except:
+            print(f'No barcode found for {name}')
+
         yield {
             'id_type_product': response.meta['brand'],
             'id_ecommerce': SITE_IDS['OLX'],
@@ -99,7 +106,8 @@ class OLXSpider(scrapy.Spider):
             'description': description,
             'price': price,
             'image': image,
-            'url': response.url
+            'url': response.url,
+            'barcode': int(barcode)
         }
 
 
@@ -111,6 +119,7 @@ class OLXSpider(scrapy.Spider):
         self.driver.get(response.url)
 
         button_xp = f'//button[@data-aut-id="{OLX.BTN_CLASS.value}"]'
+        button = None
 
         try:
             WebDriverWait(self.driver, OLX.DRIVER_TIMEOUT.value).until(
@@ -121,7 +130,6 @@ class OLXSpider(scrapy.Spider):
             self.log('The page took too long to load. Reached timeout.')
             button = False
         
-
         while button:
             try:
                 button.click()
@@ -154,13 +162,7 @@ class ColombiaGamerSpider(scrapy.Spider):
     name = CGamer.SPIDER_NAME.value
     custom_settings = {
         'FEEDS': {
-            CGamer.EXPORT_FILE_PATH.value: {
-                'format': 'json',
-                'encoding': 'utf-8',
-                'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url'],
-                'indent': 4
-            }
+            CGamer.EXPORT_FILE_PATH.value: SPIDER_EXPORT
         },
         'FEED_EXPORT_ENCODING': 'utf-8',
         'AUTOTHROTTLE_ENABLED': True
@@ -193,6 +195,10 @@ class ColombiaGamerSpider(scrapy.Spider):
         image_xp = (f'//div[@class="{CGamer.IMG_CLASS.value}"]//img/@src')
         image = response.urljoin(response.xpath(image_xp).get())
 
+        barcode_xp = f'//script[@type="{CGamer.ID_CLASS.value}"]/text()'
+        barcode_content = response.xpath(barcode_xp).get()
+        barcode = json.loads(barcode_content)['sku']
+
         yield {
             'id_type_product': response.meta['brand'],
             'id_ecommerce': SITE_IDS['ColombiaGamer'],
@@ -200,7 +206,8 @@ class ColombiaGamerSpider(scrapy.Spider):
             'description': description,
             'price': price,
             'image': image,
-            'url': response.url
+            'url': response.url,
+            'barcode': int(barcode)
         }
 
 
@@ -209,7 +216,6 @@ class ColombiaGamerSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
-
         list_items = response.xpath('//nav[@role="pagination"]//li/@class')
         page_buttons_xp = '//nav[@role="pagination"]//a/@href'
         page_buttons = response.xpath(page_buttons_xp).getall()
@@ -245,13 +251,7 @@ class GamePlSpider(scrapy.Spider):
     name = GamePl.SPIDER_NAME.value
     custom_settings = {
         'FEEDS': {
-            GamePl.EXPORT_FILE_PATH.value: {
-                'format': 'json',
-                'encoding': 'utf-8',
-                'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url'],
-                'indent': 4
-            }
+            GamePl.EXPORT_FILE_PATH.value: SPIDER_EXPORT
         },
         "FEED_EXPORT_ENCODING": "utf-8",
         'AUTOTHROTTLE_ENABLED': True
@@ -266,7 +266,7 @@ class GamePlSpider(scrapy.Spider):
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),
-        chrome_options=chrome_options)
+                                       chrome_options = chrome_options)
 
 
     @classmethod
@@ -321,15 +321,19 @@ class GamePlSpider(scrapy.Spider):
             id_type_product = 2
         if "playstation" in tag_product.lower():
             id_type_product = 3
+        
+        barcode_xp = f'//input[@name="{GamePl.ID_CLASS.value}"]'
+        barcode = self.driver.find_element_by_xpath(barcode_xp).get_attribute('value')
 
-        yield{
+        yield {
             'name': name,
             'description': description,
             'id_ecommerce': SITE_IDS['GamePlanet'],
             'id_type_product': id_type_product,
             'price': price,
             'image': image,
-            'url': response.url
+            'url': response.url,
+            'barcode': int(barcode)
         }
 
 
@@ -338,7 +342,6 @@ class GamePlSpider(scrapy.Spider):
         Retrieves information for all products in terms of the fields: name,
         description, price, image, and url
         """
-
         self.driver.get(response.url)
         next_xp = (f'//a[@title = "Next"]')
         next_page = self.driver.find_elements_by_xpath(next_xp)
@@ -359,13 +362,7 @@ class SearSpider(scrapy.Spider):
     name = SEA.SPIDER_NAME.value
     custom_settings = {
         'FEEDS': {
-            SEA.EXPORT_FILE_PATH.value: {
-                'format': 'json',
-                'encoding': 'utf-8',
-                'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url'],
-                'indent': 4
-            }
+            SEA.EXPORT_FILE_PATH.value: SPIDER_EXPORT
         },
         'FEED_EXPORT_ENCODING': 'utf-8',
         'AUTOTHROTTLE_ENABLED': True
@@ -402,6 +399,10 @@ class SearSpider(scrapy.Spider):
         if "playstation" in tag_product.lower():
             id_type_product = 3
 
+        barcode_xp = f'//div[@class="{SEA.ID_CLASS.value}"]/div[@class="right"]//span/text()'
+        barcode = response.xpath(barcode_xp).get()
+        self.log(f'>>>>>>>>>>>>>>>>>>>>>>>\n{barcode}\n<<<<<<<<<<<<<<<<<<<<<<<<<')
+
         yield {
             'name': name,
             'description': description,
@@ -409,7 +410,8 @@ class SearSpider(scrapy.Spider):
             'id_type_product': id_type_product,
             'price': price,
             'image': image,
-            'url': response.url
+            'url': response.url,
+            'barcode': int(barcode)
         }
 
 
@@ -442,13 +444,7 @@ class MixUpSpider(scrapy.Spider):
     name = MU.SPIDER_NAME.value
     custom_settings = {
         'FEEDS': {
-            MU.EXPORT_FILE_PATH.value: {
-                'format': 'json',
-                'encoding': 'utf-8',
-                'fields': ['id_type_product', 'id_ecommerce', 'name',
-                           'description', 'price', 'image', 'url'],
-                'indent': 4
-            }
+            MU.EXPORT_FILE_PATH.value: SPIDER_EXPORT
         },
         'FEED_EXPORT_ENCODING': 'utf-8',
         'AUTOTHROTTLE_ENABLED': True
@@ -463,11 +459,15 @@ class MixUpSpider(scrapy.Spider):
         chrome_options = Options()  
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),
-        chrome_options=chrome_options)
+                                       chrome_options = chrome_options)
 
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
+        """
+        This method connects the Spider with a termination signal in order to
+        automatically execute operations when the Spider closes
+        """
         spider = super(MixUpSpider, cls).from_crawler(crawler, *args, **kwargs)
         crawler.signals.connect(spider.spider_closed,
                                 signal = scrapy.signals.spider_closed)
@@ -475,7 +475,12 @@ class MixUpSpider(scrapy.Spider):
 
 
     def spider_closed(self, spider):
+        """
+        Function that is called in the moment of Spider termination. The Spider
+        calls it's Selenium driver quit method
+        """
         spider.driver.quit()
+
 
     def parse_product(self, response):
         """
@@ -494,7 +499,7 @@ class MixUpSpider(scrapy.Spider):
         price_xp = f'//span[contains(@class, "{MU.PRICE_CLASS.value}")]/text()'
         price = response.xpath(price_xp)[1].get()
         price = price.strip()         
-        price = int(float(price.replace("$","").replace(",","").replace(".",""))) 
+        price = int(float(price.replace("$", "").replace(",", "").replace(".", "")))
 
         image_xp = (f'//img[@id="{MU.IMAGE_ID.value}"]/@src')
         image = response.urljoin(response.xpath(image_xp).get())
@@ -511,6 +516,15 @@ class MixUpSpider(scrapy.Spider):
         if "playstation" in tag_product.lower():
             id_type_product = 3
         
+        barcode_xp = f'//div[@class="{MU.DETAIL_CLASS.value}"]'
+        barcode_content = response.xpath(barcode_xp).get()
+        barcode = 0
+
+        try:
+            barcode = re.search('\d{5,}', barcode_content)[0]
+        except:
+            print(f'No barcode found for {name}')
+
         yield {
             'name': name,
             'description': description,
@@ -518,7 +532,8 @@ class MixUpSpider(scrapy.Spider):
             'id_ecommerce': SITE_IDS['MixUp'],
             'price': price,
             'image': image,
-            'url': response.url
+            'url': response.url,
+            'barcode': int(barcode)
         }
 
 
