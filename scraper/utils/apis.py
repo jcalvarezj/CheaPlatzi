@@ -147,7 +147,7 @@ def _scrap_mercadolibre_product_pages(product_responses, brand_id, verbose):
                         print('Problem retrieving the product\'s description')
 
                 image = ''
-                barcode = ''
+                barcode = 0
                 if img_responses:
                     try:
                         image = img_responses[0].json()['pictures'][0]['secure_url']
