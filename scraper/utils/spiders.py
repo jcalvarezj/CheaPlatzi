@@ -198,7 +198,7 @@ class ColombiaGamerSpider(scrapy.Spider):
 
         barcode_xp = f'//script[@type="{CGamer.ID_CLASS.value}"]/text()'
         barcode_content = response.xpath(barcode_xp).get()
-        barcode = json.loads(barcode_content)['sku']
+        barcode = json.loads(barcode_content, strict = False)['sku']
 
         yield {
             'id_type_product': response.meta['brand'],
