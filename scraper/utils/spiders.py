@@ -5,7 +5,7 @@ import re
 import time
 import json
 import scrapy
-from ..utils.commons import validate_sku
+from .commons import validate_sku
 from .constants import GamePlanetConfig as GamePl, MixUpConfig as MU
 from .constants import OLXConfig as OLX, ColombiaGamerConfig as CGamer
 from .constants import SITE_IDS, BRAND_IDS, SPIDER_EXPORT, SearsConfig as SEA
