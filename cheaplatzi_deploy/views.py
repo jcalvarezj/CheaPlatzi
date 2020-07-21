@@ -3,10 +3,17 @@ from django.shortcuts import render
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser 
 from rest_framework import status
- 
+
 from cheaplatzi_deploy.models import ProductType, Ecommerce, Product
 from cheaplatzi_deploy.serializers import ProductTypeSerializer, EcommerceSerializer, ProductSerializer
 from rest_framework.decorators import api_view
+
+from django.conf import settings
+from django.views.decorators.cache import cache_page
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
+
+
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 
 @api_view(['GET', 'POST', 'DELETE'])
@@ -31,6 +38,7 @@ def producttype_list(request):
     elif request.method == 'DELETE':
         count = ProductType.objects.all().delete()
         return JsonResponse({'message': '{} Product types were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
+
 
 @api_view(['GET', 'POST', 'DELETE'])
 def ecommerce_list(request):
@@ -57,6 +65,7 @@ def ecommerce_list(request):
 
 
 @api_view(['GET', 'POST', 'DELETE'])
+@cache_page(CACHE_TTL)
 def product_list(request):
     if request.method == 'GET':
         products = Product.objects.filter(status=True)
@@ -106,6 +115,7 @@ def producttype_detail(request, pk):
         producttype.delete() 
         return JsonResponse({'message': 'Product Type was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
+
 @api_view(['GET', 'PUT', 'DELETE'])
 def ecommerce_detail(request, pk):
     ecommerces = Ecommerce.objects.get(pk=pk)
@@ -123,6 +133,7 @@ def ecommerce_detail(request, pk):
     elif request.method == 'DELETE': 
         ecommerces.delete() 
         return JsonResponse({'message': 'Product Type was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def product_detail(request, pk):
@@ -151,6 +162,7 @@ def producttype_list_active(request):
         producttypes_serializer = ProductTypeSerializer(productTypes, many=True)
         return JsonResponse(producttypes_serializer.data, safe=False)
 
+
 @api_view(['GET'])
 def ecommerce_list_active(request):
     ecommerces = Ecommerce.objects.filter(status=True)
@@ -158,6 +170,7 @@ def ecommerce_list_active(request):
     if request.method == 'GET': 
         ecommerce_serializer = EcommerceSerializer(ecommerces, many=True)
         return JsonResponse(ecommerce_serializer.data, safe=False)
+
 
 @api_view(['GET'])
 def product_list_active(request):

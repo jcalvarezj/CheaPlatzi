@@ -4,3 +4,4 @@ db.sqlite3
 app.yaml
 geckodriver.log
 *.txt
+dump.rdb
