@@ -29,6 +29,7 @@ class EcommerceSerializer(serializers.ModelSerializer):
                   'updated_at')
 
 class ProductSerializer(serializers.ModelSerializer):
+    # id_ecommerce = EcommerceSerializer(many=False,read_only=True)
  
     class Meta:
         model = Product
@@ -41,6 +42,8 @@ class ProductSerializer(serializers.ModelSerializer):
                   'image',
                   'image',
                   'url',
+                  'barcode',
                   'status',
                   'created_at',
                   'updated_at')
+    

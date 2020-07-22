@@ -7,6 +7,8 @@ from rest_framework import status
 from cheaplatzi_deploy.models import ProductType, Ecommerce, Product
 from cheaplatzi_deploy.serializers import ProductTypeSerializer, EcommerceSerializer, ProductSerializer
 from rest_framework.decorators import api_view
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 
 @api_view(['GET', 'POST', 'DELETE'])
@@ -36,8 +38,12 @@ def producttype_list(request):
 def ecommerce_list(request):
     if request.method == 'GET':
         Ecommerces = Ecommerce.objects.all()
-        
+        paginator = Paginator(Ecommerces,10)
+        page_number = request.GET.get('page', None)
         name = request.GET.get('name', None)
+
+        if page_number is not None:
+            Ecommerces = paginator.get_page(page_number)
         if name is not None:
             Ecommerces = Ecommerces.filter(name__icontains=name)
         
@@ -59,19 +65,43 @@ def ecommerce_list(request):
 @api_view(['GET', 'POST', 'DELETE'])
 def product_list(request):
     if request.method == 'GET':
-        products = Product.objects.filter(status=True)
         
         name = request.GET.get('name', None)
+        name2 = request.GET.get('name2', None)
+        name3 = request.GET.get('name3', None)
         id_type_product = request.GET.get('id_type_product', None)
         id_ecommerce = request.GET.get('id_ecommerce', None)
+        country = request.GET.get('country', None)
+        page_number = request.GET.get('page', None)
+        barcode = request.GET.get('barcode', None)
+ 
+        products = Product.objects.filter(status=True).order_by('price')
+
+        if name is not None and name2 is not None and name3 is not None:
+            products = products.filter(Q(name__icontains=name) | Q(name__icontains=name2) | Q(name__icontains=name3))
+
+        if name is not None and name2 is not None:
+            products = products.filter(Q(name__icontains=name) | Q(name__icontains=name2))
+        
         if name is not None:
             products = products.filter(name__icontains=name)
 
         if id_type_product is not None:
             products = products.filter(id_type_product=id_type_product)
+
+        if barcode is not None:
+            products = products.filter(barcode=barcode)
         
         if id_ecommerce is not None:
             products = products.filter(id_ecommerce=id_ecommerce)
+
+        if country is not None:
+            products = products.filter(id_ecommerce__country=country)
+        
+        if page_number is not None:
+            paginator = Paginator(products,20)
+            products = paginator.get_page(page_number)
+        
 
         product_serializer = ProductSerializer(products, many=True)
         return JsonResponse(product_serializer.data, safe=False)
