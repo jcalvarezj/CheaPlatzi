@@ -80,3 +80,9 @@ The optional `verbose` flag enables to see detailed information about the respon
 |PUT|api/product/:id|Update product by id / Deactivate product by id|
 |GET|api/product/active|find all active products|
 |GET|api/product?name=[kw]?id_type_product=[kw]?id_ecommerce=[kw]|find all product which name, id_type_product, id_ecommerce contains 'kw'|
+|GET|api/product?page|Pagination|
+|GET|api/product?country=[kw]|Find all product by country|
+
+
+
+
